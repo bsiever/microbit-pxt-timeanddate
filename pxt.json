@@ -9,7 +9,6 @@
     "files": [
         "README.md",
         "main.ts",
-        "softdatetime.ts"
     ],
     "testFiles": [
         "test.ts"
