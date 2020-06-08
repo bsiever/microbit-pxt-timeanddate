@@ -12,7 +12,7 @@ namespace timeAndDate {
         This ensures that "time" is checked periodically and event handlers are called.  
     */
     basic.forever(function () {
-        const cpuTime = timeInSeconds()
+        const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
         if (lastUpdateMinute != t.minute) {
             // New minute
@@ -209,7 +209,7 @@ namespace timeAndDate {
     }
 
     // TODO: This will map to a shim and more accurate version on MB (in C++)
-    function timeInSeconds(): number {
+    function cpuTimeInSeconds(): number {
         return Math.idiv(input.runningTime(), 1000)
     }
 
@@ -269,7 +269,7 @@ namespace timeAndDate {
         hour = hour % 24
         minute = minute % 60
         second = second % 60
-        const cpuTime = timeInSeconds()
+        const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
         cpuTimeAtSetpoint = cpuTime
         timeToSetpoint = secondsSoFarForYear(t.month, t.day, t.year, hour, minute, second)
@@ -288,7 +288,7 @@ namespace timeAndDate {
     export function setDate(month: number, day: number, year: number) {
         month = month % 13
         day = day % 32
-        const cpuTime = timeInSeconds()
+        const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
         startYear = year
         cpuTimeAtSetpoint = cpuTime
@@ -336,7 +336,7 @@ namespace timeAndDate {
     //% draggableParameters=variable
     //% handlerStatement=1
     export function numericTime(handler: (hour: number, minute: number, second: number, weekday: number, day: number, month: number, year: number, dayOfYear: number) => void) {
-        const cpuTime = timeInSeconds()
+        const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
         handler(t.hour, t.minute, t.second, dayOfWeek(t.month, t.day, t.year), t.day, t.month, t.year, t.dayOfYear)
     }
@@ -347,7 +347,7 @@ namespace timeAndDate {
      */
     //% block="current time $format"
     export function time(format: TimeFormat): string {
-        const cpuTime = timeInSeconds()
+        const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
 
         // Handle 24-hour format with helper
@@ -393,7 +393,7 @@ namespace timeAndDate {
      */
     //% block="current date formatted $format"
     export function date(format: DateFormat): string {
-        const cpuTime = timeInSeconds()
+        const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
         switch (format) {
             case DateFormat.MD:
@@ -415,7 +415,7 @@ namespace timeAndDate {
      */    
     //% block="date and time stamp"
     export function dateTime(): string {
-        const cpuTime = timeInSeconds()
+        const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
         return fullYear(t) + " " + fullTime(t)
     }

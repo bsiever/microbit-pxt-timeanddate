@@ -1,14 +1,14 @@
 {
     "name": "microbit-pxt-softclock",
     "version": "0.0.3",
-    "description": "",
+    "description": "Software based Real-Time Clock (Time & Date)",
     "dependencies": {
-        "core": "*",
-        "radio": "*"
+        "core": "*"
     },
     "files": [
         "README.md",
-        "main.ts"
+        "main.ts", 
+        "softtimeanddate.cpp"
     ],
     "testFiles": [
         "test.ts"
