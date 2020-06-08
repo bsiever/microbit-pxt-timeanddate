@@ -60,7 +60,7 @@ namespace timeAndDate {
     const cdoy = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365]
 
     function isLeapYear(y: number) : boolean {
-        return (y % 400 == 0 || (y % 100 != 0 && y% 4 == 0))
+        return (y % 400 == 0 || (y % 100 != 0 && y % 4 == 0))
     }
 
     function dateToDayOfYear(m: number, d: number, y: number) {
@@ -93,7 +93,7 @@ namespace timeAndDate {
         return { month: -1, day: -1, year: 0, hour: 0, minute: 0, second: 0, dayOfYear: 0 }
     }
 
-    function secondsSoFarForYear(d: number, m: number, y: number, hh: number, mm: number, ss:number): number {
+    function secondsSoFarForYear(m: number, d: number, y: number, hh: number, mm: number, ss:number): number {
         // ((((Complete Days * 24hrs/ day)+complete hours)*60min/ hr)+complete minutes)* 60s/ min + complete seconds
         return (((dateToDayOfYear(m, d, y) - 1) * 24 + hh) * 60 + mm) * 60 + ss
     }
@@ -145,19 +145,24 @@ namespace timeAndDate {
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
         cpuTimeAtSetpoint = cpuTime
-        timeToSetpoint = secondsSoFarForYear(t.day, t.month, t.year, hour, minute, second)
+        timeToSetpoint = secondsSoFarForYear(t.month, t.day, t.year, hour, minute, second)
     }
 
-    //% block="set date to | Day %day | / Month %month | / Year %year"
-    //% day.min=0 day.max=31
+
+function DateTimeString(t: DateTime) : string {
+    return t.month + "/" + t.day + "/" + t.year + " " + t.hour + ":" + t.minute + "." + t.second + "  " + t.dayOfYear
+}
+
+    //% block="set date to | Month %month | / Day %day | / Year %tyear"
     //% month.min=1 month.max=12
-    //% year.min=2020 year.max=2050
-    export function setDate(dy: number, mon: number, yr: number) {
+    //% day.min=0 day.max=31
+    //% tyear.min=0 tyear.max=2050
+    export function setDate(month: number, day: number, tyear: number) {
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
-        year = yr
+        year = tyear
         cpuTimeAtSetpoint = cpuTime
-        timeToSetpoint = secondsSoFarForYear(dy, mon, yr, t.hour, t.minute, t.second)
+        timeToSetpoint = secondsSoFarForYear(month, day, year, t.hour, t.minute, t.second)
     }
 
     //% block="set time to |  %hour | : %minute | . %second | %ampm"
