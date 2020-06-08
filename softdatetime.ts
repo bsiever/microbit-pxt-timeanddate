@@ -184,7 +184,8 @@ function DateTimeString(t: DateTime) : string {
     // Add or subtract time with the given unit. 
     //% block="advance time/date by | %amount | %unit "
     export function advanceBy(amount: number, unit: TimeUnit) {
-        const units = [1, 60 * 1, 60 * 60 * 1, 24 * 60 * 60 * 1]
+        const units = [0, 1, 60 * 1, 60 * 60 * 1, 24 * 60 * 60 * 1]
+        serial.writeLine(""+unit)
         cpuTimeAtSetpoint -= amount * units[unit]
     }
 
@@ -196,7 +197,9 @@ function DateTimeString(t: DateTime) : string {
     //% draggableParameters=variable
     //% handlerStatement=1
     export function numericTime(handler: (hour: number, minute: number, second: number, weekday: number, day: number, month: number, year: number, dayOfYear: number) => void) {
-
+        const cpuTime = timeInSeconds()
+        const t = timeFor(cpuTime)
+        handler(t.hour, t.minute, t.second, 0, t.day, t.month, t.year, t.dayOfYear)
     }
 
     function leftZeroPadTo(inp: number, digits: number) {
