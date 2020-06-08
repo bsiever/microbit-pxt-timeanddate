@@ -69,7 +69,7 @@ namespace timeAndDate {
         //% block="as H:MM"
         HMM,
         //% block="as H:MM am / pm"
-        HMMAMPM,        
+        HMMAMPM,
     }
 
     export enum DateFormat {
@@ -358,7 +358,7 @@ namespace timeAndDate {
         let minute = leftZeroPadTo(t.minute, 2)
 
         // Simpler military format
-        if (format==TimeFormat.HHMM24hr) 
+        if (format == TimeFormat.HHMM24hr)
             return leftZeroPadTo(t.hour, 2) + ":" + minute
 
         // Data for all other formats
@@ -375,13 +375,13 @@ namespace timeAndDate {
 
         // Compose them appropriately
         switch (format) {
-            case TimeFormat.HMMSSAMPM: 
+            case TimeFormat.HMMSSAMPM:
                 return hour + minute + "." + leftZeroPadTo(t.second, 2) + ap
 
-            case TimeFormat.HMMAMPM: 
+            case TimeFormat.HMMAMPM:
                 return hour + minute + ap
 
-            case TimeFormat.HMM: 
+            case TimeFormat.HMM:
                 return hour + minute
         }
         return ""
@@ -412,7 +412,7 @@ namespace timeAndDate {
     /**
      * Current date and time in a timestamp format, like: YYYY-MM-DD HH:MM.SS.  
      * This ensures that the date and time are taken at the same instant (that is, no time will have passed so the date will correspond to the time)
-     */    
+     */
     //% block="date and time stamp"
     export function dateTime(): string {
         const cpuTime = cpuTimeInSeconds()
