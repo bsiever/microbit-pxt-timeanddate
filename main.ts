@@ -60,10 +60,16 @@ namespace timeAndDate {
     }
 
     export enum TimeFormat {
-        //% block="with am / pm"
-        AMPM,
-        //% block="as 24-hr"
-        HHMM24hr
+        //% block="as H:MM.SS am / pm"
+        HMMSSAMPM,
+        //% block="as HH:MM 24-hr"
+        HHMM24hr,
+        //% block="as HH:MM.SS 24-hr"
+        HHMMSS24hr,
+        //% block="as H:MM"
+        HMM,
+        //% block="as H:MM am / pm"
+        HMMAMPM,        
     }
 
     export enum DateFormat {
@@ -343,21 +349,42 @@ namespace timeAndDate {
     export function time(format: TimeFormat): string {
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
-        switch (format) {
-            case TimeFormat.HHMM24hr:
-                return fullTime(t)
-                break
-            case TimeFormat.AMPM:
-                let hour = t.hour
-                let ap = t.hour < 12 ? "am" : "pm"
-                if (t.hour == 0) {
-                    hour = 12  // am
-                } else if (hour > 12) {
-                    hour = t.hour - 12
-                }
-                return hour + ":" + leftZeroPadTo(t.minute, 2) + "." + leftZeroPadTo(t.second, 2) + ap
-                break
+
+        // Handle 24-hour format with helper
+        if (format == TimeFormat.HHMMSS24hr)
+            return fullTime(t)
+
+        // Format minutes for all remaining formats
+        let minute = leftZeroPadTo(t.minute, 2)
+
+        // Simpler military format
+        if (format==TimeFormat.HHMM24hr) 
+            return leftZeroPadTo(t.hour, 2) + ":" + minute
+
+        // Data for all other formats
+        // Compute strings for other formats
+        let hour = null
+        let ap = t.hour < 12 ? "am" : "pm"
+        if (t.hour == 0) {
+            hour = "12:"  // am
+        } else if (t.hour > 12) {
+            hour = (t.hour - 12) + ":"
+        } else {
+            hour = (t.hour) + ":"
         }
+
+        // Compose them appropriately
+        switch (format) {
+            case TimeFormat.HMMSSAMPM: 
+                return hour + minute + "." + leftZeroPadTo(t.second, 2) + ap
+
+            case TimeFormat.HMMAMPM: 
+                return hour + minute + ap
+
+            case TimeFormat.HMM: 
+                return hour + minute
+        }
+        return ""
     }
 
     /**
@@ -385,7 +412,8 @@ namespace timeAndDate {
     /**
      * Current date and time in a timestamp format, like: YYYY-MM-DD HH:MM.SS.  
      * This ensures that the date and time are taken at the same instant (that is, no time will have passed so the date will correspond to the time)
-     */    //% block="date and time stamp"
+     */    
+    //% block="date and time stamp"
     export function dateTime(): string {
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
