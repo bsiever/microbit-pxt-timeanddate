@@ -1,7 +1,10 @@
-
-// Tested on https://makecode.com/playground
-
-
+/**
+ * Provides a software based running clock for the time and date for the micro:bit. 
+ * The micro:bit doesn't have a true real-time clock.  In order to minimize power consumption, this relies on an imprecise clock.
+ * The margin of error is +/- 22 seconds per 24-hour period and will vary from micro:bit to micro:bit and based on temperature.
+ *
+ * @author Bill Siever
+ */
 
 enum MornNight {
     //% block="am"
@@ -39,8 +42,13 @@ enum DateFormat {
     YYYY_MM_DD
 }
 
-// Fontawesome Unicode maybe: "&#xf017;"
-//% color="#AA278D"  icon="\u23f0" 
+/**
+ * Provides a running clock for the time and date.  
+ * The micro:bit doesn't have a true real-time clock.  In order to minimize power consumption, this relies on an imprecise clock.
+ * The margin of error is +/- 22 seconds per 24-hour period and will vary from micro:bit to micro:bit and based on temperature.
+ * 
+ */
+//% color="#AA278D"  icon="\uf017"
 namespace timeAndDate {
 
 
@@ -56,12 +64,12 @@ namespace timeAndDate {
     // ********* State Variable ************************
 
     // State variables to manage time 
-    let year = 0
+    let startYear = 0
     let timeToSetpoint = 0
     let cpuTimeAtSetpoint = 0
 /*
 
-  year Start          Time Date/Time set        CurrentCPUTime
+  Start year          Time Date/Time set        CurrentCPUTime
   |                   | (in s)                  | (in s)
   V                   V                         V
   |-------------------+-------------------------|
@@ -73,7 +81,7 @@ namespace timeAndDate {
       timeToSetpoint          deltaTime
       (in s)                  ( in s)
 
-    setDate sets the year and update timeToSetpoint and cpuTimeAtSetpoint 
+    setDate sets the start year and update timeToSetpoint and cpuTimeAtSetpoint 
     setTime methods update just timeToSetpoint and cpuTimeAtSetpoint
  */
 
@@ -129,7 +137,7 @@ namespace timeAndDate {
         const deltaTime = cpuTime - cpuTimeAtSetpoint
         let sSinceStartOfYear = timeToSetpoint + deltaTime
         // Find elapsed years by counting up from start year and subtracting off complete years
-        let y = year
+        let y = startYear
         let leap = isLeapYear(y)
         while ((!leap && sSinceStartOfYear > 365 * 24 * 60 * 60) || (sSinceStartOfYear > 366 * 24 * 60 * 60)) {
             if(leap) {
@@ -143,15 +151,15 @@ namespace timeAndDate {
 
         // sSinceStartOfYear and leap are now for "y", not "year"
         // Find elapsed days
-        const daysFromStartOfYear = Math.floor(sSinceStartOfYear/(24*60*60))+1  // Offset for 1/1 being day 1
+        const daysFromStartOfYear = Math.idiv(sSinceStartOfYear,(24*60*60))+1  // Offset for 1/1 being day 1
         const secondsSinceStartOfDay = sSinceStartOfYear % (24 * 60 * 60)
 
         // Find elapsed hours
-        const hoursFromStartOfDay = Math.floor(secondsSinceStartOfDay/(60*60))
+        const hoursFromStartOfDay = Math.idiv(secondsSinceStartOfDay,(60*60))
         const secondsSinceStartOfHour = secondsSinceStartOfDay % (60 * 60)
 
         // Find elapsed minutes
-        const minutesFromStartOfHour = Math.floor(secondsSinceStartOfHour/(60))
+        const minutesFromStartOfHour = Math.idiv(secondsSinceStartOfHour,(60))
         // Find elapsed seconds
         const secondsSinceStartOfMinute = secondsSinceStartOfHour % (60)
 
@@ -162,7 +170,7 @@ namespace timeAndDate {
 
     // TODO: This will map to a shim and more accurate version on MB (in C++)
     function timeInSeconds() : number {
-        return Math.floor(input.runningTime()/1000)
+        return Math.idiv(input.runningTime(),1000)
     }
 
 
@@ -182,14 +190,15 @@ namespace timeAndDate {
         // f = k + [(13 * m - 1) / 5] + D + [D / 4] + [C / 4] - 2 * C.
         // Zeller's Rule from http://mathforum.org/dr.math/faq/faq.calendar.html
         let D = y % 100
-        let C = Math.floor(y / 100)
+        let C = Math.idiv(y, 100)
         // Use integer division
-        return d + Math.floor((13 * m - 1) / 5) + D + Math.floor(D / 4) + Math.floor(C / 4) - 2 * C
+        return d + Math.idiv((13 * m - 1), 5) + D + Math.idiv(D, 4) + Math.idiv(C, 4) - 2 * C
     }
 
     function fullTime(t: DateTime): string {
         return leftZeroPadTo(t.hour, 2) + ":" + leftZeroPadTo(t.minute, 2) + "." + leftZeroPadTo(t.second, 2)
     }
+
     function fullYear(t: DateTime): string {
         return leftZeroPadTo(t.year, 4) + "-" + leftZeroPadTo(t.month, 2) + "-" + leftZeroPadTo(t.day, 2)
     }
@@ -199,10 +208,26 @@ namespace timeAndDate {
 
     // ********* Exposed blocks ************************
 
+/*
+     * You can "Set" the clock either by:
+     *     a) Programming the micro:bit by setting a date/time that will happen soon in the setup, then pressing the
+     *        reset button on the back of the micro:bit approximately 2 seconds before that time.
+     *        For example, program the micro:bit using 13:00 (1pm) in the setup.  Hit the reset button
+     *        on the back of the micro:bit at 12:59.58 in order for it to start time keeping at 13:00.00
+     *     b) Use the "advance time by" block in conjunction with events to allow the time to increase or decreast.
+     *        For example, use the A and B buttons to add or subtract a minute.
+*/
+
+    /**
+     * Set the time using 24-hour format
+     * @param hour the hour (0-23)
+     * @param minute the minute (0-59)
+     * @param second the second (0-59)
+     */
     //% block="set time from 24-hour time |  %hour | : %minute | . %second"
-    //% hour.min=0 hour.max=23
-    //% minute.min=0 minute.max=59
-    //% second.min=0 second.max=59
+    //% hour.min=0 hour.max=23 hour.defl=13
+    //% minute.min=0 minute.max=59 minute.defl=30
+    //% second.min=0 second.max=59 second.defl=0
     export function set24HourTime(hour: number, minute: number, second: number) {
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
@@ -210,22 +235,22 @@ namespace timeAndDate {
         timeToSetpoint = secondsSoFarForYear(t.month, t.day, t.year, hour, minute, second)
     }
 
-    //% block="set date to | Month %month | / Day %day | / Year %tyear"
-    //% month.min=1 month.max=12
-    //% day.min=0 day.max=31
-    //% tyear.min=0 tyear.max=2050
-    export function setDate(month: number, day: number, tyear: number) {
+    //% block="set date to | Month %month | / Day %day | / Year %year"
+    //% month.min=1 month.max=12 month.defl=1
+    //% day.min=1 day.max=31 day.defl=20
+    //% year.min=2020 year.max=2050 year.defl=2020
+    export function setDate(month: number, day: number, year: number) {
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
-        year = tyear
+        startYear = year
         cpuTimeAtSetpoint = cpuTime
-        timeToSetpoint = secondsSoFarForYear(month, day, year, t.hour, t.minute, t.second)
+        timeToSetpoint = secondsSoFarForYear(month, day, startYear, t.hour, t.minute, t.second)
     }
 
     //% block="set time to |  %hour | : %minute | . %second | %ampm"
-    //% hour.min=0 hour.max=23
-    //% minute.min=0 minute.max=59
-    //% second.min=0 second.max=59
+    //% hour.min=1 hour.max=12 hour.defl=11
+    //% minute.min=0 minute.max=59 minute.defl=30
+    //% second.min=0 second.max=59 second.defl=0
     //% inlineInputMode=inline
     export function setTime(hour: number, minute: number, second: number, ampm: MornNight) {
         // Adjust to 24-hour time format
