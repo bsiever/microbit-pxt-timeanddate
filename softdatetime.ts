@@ -56,12 +56,12 @@ namespace timeAndDate {
     // ********* State Variable ************************
 
     // State variables to manage time 
-    let year = 0
+    let startYear = 0
     let timeToSetpoint = 0
     let cpuTimeAtSetpoint = 0
 /*
 
-  year Start          Time Date/Time set        CurrentCPUTime
+  Start year          Time Date/Time set        CurrentCPUTime
   |                   | (in s)                  | (in s)
   V                   V                         V
   |-------------------+-------------------------|
@@ -73,7 +73,7 @@ namespace timeAndDate {
       timeToSetpoint          deltaTime
       (in s)                  ( in s)
 
-    setDate sets the year and update timeToSetpoint and cpuTimeAtSetpoint 
+    setDate sets the start year and update timeToSetpoint and cpuTimeAtSetpoint 
     setTime methods update just timeToSetpoint and cpuTimeAtSetpoint
  */
 
@@ -129,7 +129,7 @@ namespace timeAndDate {
         const deltaTime = cpuTime - cpuTimeAtSetpoint
         let sSinceStartOfYear = timeToSetpoint + deltaTime
         // Find elapsed years by counting up from start year and subtracting off complete years
-        let y = year
+        let y = startYear
         let leap = isLeapYear(y)
         while ((!leap && sSinceStartOfYear > 365 * 24 * 60 * 60) || (sSinceStartOfYear > 366 * 24 * 60 * 60)) {
             if(leap) {
@@ -143,15 +143,15 @@ namespace timeAndDate {
 
         // sSinceStartOfYear and leap are now for "y", not "year"
         // Find elapsed days
-        const daysFromStartOfYear = Math.floor(sSinceStartOfYear/(24*60*60))+1  // Offset for 1/1 being day 1
+        const daysFromStartOfYear = Math.idiv(sSinceStartOfYear,(24*60*60))+1  // Offset for 1/1 being day 1
         const secondsSinceStartOfDay = sSinceStartOfYear % (24 * 60 * 60)
 
         // Find elapsed hours
-        const hoursFromStartOfDay = Math.floor(secondsSinceStartOfDay/(60*60))
+        const hoursFromStartOfDay = Math.idiv(secondsSinceStartOfDay,(60*60))
         const secondsSinceStartOfHour = secondsSinceStartOfDay % (60 * 60)
 
         // Find elapsed minutes
-        const minutesFromStartOfHour = Math.floor(secondsSinceStartOfHour/(60))
+        const minutesFromStartOfHour = Math.idiv(secondsSinceStartOfHour,(60))
         // Find elapsed seconds
         const secondsSinceStartOfMinute = secondsSinceStartOfHour % (60)
 
@@ -162,7 +162,7 @@ namespace timeAndDate {
 
     // TODO: This will map to a shim and more accurate version on MB (in C++)
     function timeInSeconds() : number {
-        return Math.floor(input.runningTime()/1000)
+        return Math.idiv(input.runningTime(),1000)
     }
 
 
@@ -182,9 +182,9 @@ namespace timeAndDate {
         // f = k + [(13 * m - 1) / 5] + D + [D / 4] + [C / 4] - 2 * C.
         // Zeller's Rule from http://mathforum.org/dr.math/faq/faq.calendar.html
         let D = y % 100
-        let C = Math.floor(y / 100)
+        let C = Math.idiv(y, 100)
         // Use integer division
-        return d + Math.floor((13 * m - 1) / 5) + D + Math.floor(D / 4) + Math.floor(C / 4) - 2 * C
+        return d + Math.idiv((13 * m - 1), 5) + D + Math.idiv(D, 4) + Math.idiv(C, 4) - 2 * C
     }
 
     function fullTime(t: DateTime): string {
@@ -210,16 +210,16 @@ namespace timeAndDate {
         timeToSetpoint = secondsSoFarForYear(t.month, t.day, t.year, hour, minute, second)
     }
 
-    //% block="set date to | Month %month | / Day %day | / Year %tyear"
+    //% block="set date to | Month %month | / Day %day | / Year %year"
     //% month.min=1 month.max=12
     //% day.min=0 day.max=31
-    //% tyear.min=0 tyear.max=2050
-    export function setDate(month: number, day: number, tyear: number) {
+    //% year.min=0 year.max=2050
+    export function setDate(month: number, day: number, year: number) {
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
-        year = tyear
+        startYear = year
         cpuTimeAtSetpoint = cpuTime
-        timeToSetpoint = secondsSoFarForYear(month, day, year, t.hour, t.minute, t.second)
+        timeToSetpoint = secondsSoFarForYear(month, day, startYear, t.hour, t.minute, t.second)
     }
 
     //% block="set time to |  %hour | : %minute | . %second | %ampm"
