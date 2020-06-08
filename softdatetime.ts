@@ -53,12 +53,12 @@ namespace timeAndDate {
 
 
     interface DateTime {
-        month: number  // 1-12 Month of year
-        day: number  // 1-31 / Day of month
-        year: number  // Assumed to be 2020 or later
-        hour: number  // 0-23 / 24-hour format  
-        minute: number // 0-59 
-        second: number // 0-59
+        month:  number  // 1-12 Month of year
+        day:    number  // 1-31 / Day of month
+        year:   number  // Assumed to be 2020 or later
+        hour:   number  // 0-23 / 24-hour format  
+        minute: number  // 0-59 
+        second: number  // 0-59
         dayOfYear: number // 1-366
     }
     // ********* State Variable ************************
@@ -231,6 +231,9 @@ namespace timeAndDate {
         timeToSetpoint = secondsSoFarForYear(t.month, t.day, t.year, hour, minute, second)
     }
 
+    /**
+     * Set the date
+     */
     //% block="set date to | Month %month | / Day %day | / Year %year"
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
@@ -243,6 +246,9 @@ namespace timeAndDate {
         timeToSetpoint = secondsSoFarForYear(month, day, startYear, t.hour, t.minute, t.second)
     }
 
+    /**
+     * Set the time using am/pm format
+     */
     //% block="set time to |  %hour | : %minute | . %second | %ampm"
     //% hour.min=1 hour.max=12 hour.defl=11
     //% minute.min=0 minute.max=59 minute.defl=30
@@ -258,15 +264,18 @@ namespace timeAndDate {
         set24HourTime(hour, minute, second);
     }
 
-    // This can cause overflow or underflow (adding 1 minute could change the hour)
-    // Add or subtract time with the given unit. 
+    /**
+     * Advance the time by the given amount (note: this could "roll-over" to other aspects of time/date).  Negative values will cause time to go backward.
+     */
     //% block="advance time/date by | %amount | %unit "
     export function advanceBy(amount: number, unit: TimeUnit) {
         const units = [0, 1, 60 * 1, 60 * 60 * 1, 24 * 60 * 60 * 1]
-        serial.writeLine("" + unit)
         cpuTimeAtSetpoint -= amount * units[unit]
     }
 
+    /**
+     * Get all values of time as numbers.  This retrieves them all-at-once so they are consistent
+     */
     //% block="current time as numbers $hour:$minute.$second on $weekday, $day/$month/$year, $dayOfYear" advanced=true
     //% draggableParameters=variable
     //% handlerStatement=1
@@ -276,6 +285,9 @@ namespace timeAndDate {
         handler(t.hour, t.minute, t.second, dayOfWeek(t.month, t.day, t.year), t.day, t.month, t.year, t.dayOfYear)
     }
 
+    /**
+     * Current time as a string in the specified format
+     */
     //% block="current time $format"
     export function time(format: TimeFormat): string {
         const cpuTime = timeInSeconds()
@@ -297,6 +309,9 @@ namespace timeAndDate {
         }
     }
 
+    /**
+     * Current date as a string in the specified format
+     */
     //% block="current date formatted $format"
     export function date(format: DateFormat): string {
         const cpuTime = timeInSeconds()
@@ -315,23 +330,35 @@ namespace timeAndDate {
         return ""
     }
 
-    //% block="date and time stamp"
+    /**
+     * Current date and time in a timestamp format, like: YYYY-MM-DD HH:MM.SS.  
+     * This ensures that the date and time are taken at the same instant (that is, no time will have passed so the date will correspond to the time)
+     */    //% block="date and time stamp"
     export function dateTime(): string {
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
         return fullYear(t) + " " + fullTime(t)
     }
 
+    /**
+     * Called when minutes change
+     */
     //% block="minute changed" advanced=true
     export function onMinuteChanged(handler: () => void) {
 
     }
 
-    // }
+    /**
+     * Called when hours change
+     */
     //% block="hour changed" advanced=true
     export function onHourChanged(handler: () => void) {
 
     }
+
+    /**
+     * Called when days change
+     */
     //% block="day changed" advanced=true
     export function onDayChanged(handler: () => void) {
 
