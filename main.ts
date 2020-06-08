@@ -9,7 +9,7 @@
 namespace timeAndDate {
 
     /* 
-        This ensures that "time" is checked periodically and event handlers are called. 
+        This ensures that "time" is checked periodically and event handlers are called.  
     */
     basic.forever(function () {
         const cpuTime = timeInSeconds()
