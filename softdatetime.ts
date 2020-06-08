@@ -67,8 +67,7 @@ namespace timeAndDate {
     let startYear = 0
     let timeToSetpoint = 0
     let cpuTimeAtSetpoint = 0
-    /*
-    
+    /*    
       Start year          Time Date/Time set        CurrentCPUTime
       |                   | (in s)                  | (in s)
       V                   V                         V
