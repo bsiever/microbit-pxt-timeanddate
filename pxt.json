@@ -8,11 +8,13 @@
     },
     "files": [
         "README.md",
-        "main.ts"
+        "main.ts",
+        "softdatetime.ts"
     ],
     "testFiles": [
         "test.ts"
     ],
     "public": false,
-    "preferredEditor": "tsprj"
+    "preferredEditor": "tsprj",
+    "installedVersion": "workspace:fe4765ad-ac3a-476d-1666-3f317f382201"
 }
