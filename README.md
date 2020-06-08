@@ -1,6 +1,17 @@
 # microbit-pxt-softclock
 
+## Setting the Time 
 
+There are three approaches to setting the time:
+
+1. Synchronizing 
+
+### Synchronizing
+
+```blocks
+timeAndDate.setDate(1, 20, 2020)
+timeAndDate.set24HourTime(13, 30, 0)
+```
 
 ## TODO
 
