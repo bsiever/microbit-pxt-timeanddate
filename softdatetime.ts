@@ -134,7 +134,7 @@ namespace timeAndDate {
     }
 
     function timeInSeconds() : number {
-        return Math.floor(input.runningTimeMicros()/1000)
+        return Math.floor(input.runningTime()/1000)
     }
 
     //% block="set time from 24-hour time |  %hour | : %minute | . %second"
@@ -194,22 +194,50 @@ namespace timeAndDate {
 
     }
 
+    function leftZeroPadTo(inp: number, digits: number) {
+        let value = inp + ""
+        while(value.length<digits) {
+            value = "0"+value
+        }
+        return value
+    }
+
 
     //% block="current time $format"
     export function time(format: TimeFormat): string {
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
-        return t.hour + ":" + t.minute + "." + t.second
+        switch(format) {
+            case TimeFormat.HHMM24hr:
+                return leftZeroPadTo(t.hour,2) + ":" + leftZeroPadTo(t.minute, 2) + "." + leftZeroPadTo(t.second,2)
+                break
+            case TimeFormat.AMPM:
+                let hour = t.hour
+                let ap = t.hour<12 ? "am" : "pm"
+                if(t.hour==0) {
+                    hour = 12  // am
+                } else if(hour>12) {
+                    hour = t.hour-12
+                }
+                return hour + ":" + leftZeroPadTo(t.minute, 2) + "." + leftZeroPadTo(t.second, 2) + ap
+            break
+        }
     }
 
     //% block="current date formatted $format"
     export function date(format: DateFormat): string {
+        const cpuTime = timeInSeconds()
+        const t = timeFor(cpuTime)
+        // TODO
         return ""
     }
 
     //% block="date and time stamp"
     export function dateTime(): string {
-        return ""
+        const cpuTime = timeInSeconds()
+        const t = timeFor(cpuTime)
+        return leftZeroPadTo(t.year, 4) + "-" + leftZeroPadTo(t.month, 2) + "-" + leftZeroPadTo(t.day, 2) + " " +
+            leftZeroPadTo(t.hour, 2) + ":" + leftZeroPadTo(t.minute, 2) + "." + leftZeroPadTo(t.second, 2)
     }
 
     //% block="minute changed" advanced=true
