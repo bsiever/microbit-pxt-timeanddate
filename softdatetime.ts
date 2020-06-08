@@ -104,7 +104,7 @@ namespace timeAndDate {
         // Find elapsed years by counting up from start year and subtracting off complete years
         let y = year
         let leap = isLeapYear(y)
-        while (!leap && sSinceStartOfYear > 365 * 24 * 60 * 60) || (sSinceStartOfYear > 366 * 24 * 60 * 60) {
+        while ((!leap && sSinceStartOfYear > 365 * 24 * 60 * 60) || (sSinceStartOfYear > 366 * 24 * 60 * 60)) {
             if(leap) {
                 sSinceStartOfYear -= 366 * 24 * 60 * 60 
             } else {
@@ -134,7 +134,7 @@ namespace timeAndDate {
     }
 
     function timeInSeconds() : number {
-        return Math.floor(input.runningTimeMicros()/1000);
+        return Math.floor(input.runningTimeMicros()/1000)
     }
 
     //% block="set time from 24-hour time |  %hour | : %minute | . %second"
@@ -160,28 +160,31 @@ namespace timeAndDate {
         timeToSetpoint = secondsSoFarForYear(dy, mon, yr, t.hour, t.minute, t.second)
     }
 
-
-
-
-
-
-
-
     //% block="set time to |  %hour | : %minute | . %second | %ampm"
     //% hour.min=0 hour.max=23
     //% minute.min=0 minute.max=59
     //% second.min=0 second.max=59
     //% inlineInputMode=inline
     export function setTime(hour: number, minute: number, second: number, ampm: MornNight) {
-
+        // Adjust to 24-hour time format
+        if (ampm == MornNight.AM && hour == 12) {  // 12am -> 0 hundred hours
+            hour = 0;
+        } else if (hour < 12) {        // PMs other than 12 get shifted after 12:00 hours
+            hour = hour + 12;
+        }
+        set24HourTime(hour, minute, second);     
     }
 
     // This can cause overflow or underflow (adding 1 minute could change the hour)
     // Add or subtract time with the given unit. 
     //% block="advance time/date by | %amount | %unit "
     export function advanceBy(amount: number, unit: TimeUnit) {
-
+        const units = [1, 60 * 1, 60 * 60 * 1, 24 * 60 * 60 * 1]
+        cpuTimeAtSetpoint -= amount * units[unit]
     }
+
+
+
 
 
     //% block="current time as numbers $hour:$minute.$second on $weekday, $day/$month/$year, $dayOfYear" advanced=true
@@ -194,7 +197,9 @@ namespace timeAndDate {
 
     //% block="current time $format"
     export function time(format: TimeFormat): string {
-        return ""
+        const cpuTime = timeInSeconds()
+        const t = timeFor(cpuTime)
+        return t.hour + ":" + t.minute + "." + t.second
     }
 
     //% block="current date formatted $format"
@@ -224,5 +229,18 @@ namespace timeAndDate {
     export function onDayChanged(handler: () => void) {
 
     }
+
+    /**
+     * 
+def dayOfWeek(m, d, y):
+    # f = k + [(13*m-1)/5] + D + [D/4] + [C/4] - 2*C.
+    # Zeller's Rule from http://mathforum.org/dr.math/faq/faq.calendar.html
+    D = y%100
+    C = y//100
+    # Use integer division
+    return d + (13*m-1)//5 + D + D//4 + C//4 - 2*C
+
+
+     */
 
 }
