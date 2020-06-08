@@ -29,6 +29,6 @@ namespace timeAndDate {
         lastTimeUS = thisTimeUS;
 
         uint64_t timeUS = ((uint64_t)upperTimeUS)<<32 | ((uint64_t)thisTimeUS);
-        return (uint32)(timeUS/1000000000);
+        return (uint32_t)(timeUS/1000000);
     }
 }

@@ -208,8 +208,8 @@ namespace timeAndDate {
         return { month: ddmm.month, day: ddmm.day, year: y, hour: hoursFromStartOfDay, minute: minutesFromStartOfHour, second: secondsSinceStartOfMinute, dayOfYear: daysFromStartOfYear }
     }
 
-    // TODO: This will map to a shim and more accurate version on MB (in C++)
-    function cpuTimeInSeconds(): number {
+    //% shim=timeAndDate::cpuTimeInSeconds
+    function cpuTimeInSeconds(): uint32 {
         return Math.idiv(input.runningTime(), 1000)
     }
 
