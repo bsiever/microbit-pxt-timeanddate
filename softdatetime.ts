@@ -31,10 +31,10 @@ enum TimeFormat {
 }
 
 enum DateFormat {
-    //% block="as Day/Month"
-    DM,
-    //% block="as Day/Month/Year"
-    DMYYYY,
+    //% block="as Month/Day"
+    MD,
+    //% block="as Month/Day/Year"
+    MDYYYY,
     //% block="as YEAR-MONTH-DAY"
     YYYY_MM_DD
 }
@@ -42,6 +42,8 @@ enum DateFormat {
 // Fontawesome Unicode maybe: "&#xf017;"
 //% color="#AA278D"  icon="\u23f0" 
 namespace timeAndDate {
+
+
     interface DateTime {
       month: number  // 1-12 Month of year
       day:   number  // 1-31 / Day of month
@@ -51,13 +53,38 @@ namespace timeAndDate {
       second: number // 0-59
       dayOfYear: number // 1-366
     }
+    // ********* State Variable ************************
 
-
+    // State variables to manage time 
     let year = 0
     let timeToSetpoint = 0
     let cpuTimeAtSetpoint = 0
+/*
 
+  year Start          Time Date/Time set        CurrentCPUTime
+  |                   | (in s)                  | (in s)
+  V                   V                         V
+  |-------------------+-------------------------|
+                      ^
+                      |
+                      Known dd/mm/yy hh:mm,.s
+                      AND cpuTimeAtSetpoint (in s)
+   |------------------|-------------------------|
+      timeToSetpoint          deltaTime
+      (in s)                  ( in s)
+
+    setDate sets the year and update timeToSetpoint and cpuTimeAtSetpoint 
+    setTime methods update just timeToSetpoint and cpuTimeAtSetpoint
+ */
+
+    // Cummulative Days of Year (cdoy): Table of month (1-based indices) to cummulative completed days prior to month
     const cdoy = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365]
+
+
+
+
+
+    // ********* Time Calculation / Management ************************
 
     function isLeapYear(y: number) : boolean {
         return (y % 400 == 0 || (y % 100 != 0 && y % 4 == 0))
@@ -73,7 +100,7 @@ namespace timeAndDate {
         return dayOfYear
     }
 
-    // Returns a DateTime with just Month/Year
+    // Returns a DateTime with just Month/Year (others 0)
     function dayOfYearToMonthAndDay(d: number, y: number): DateTime {
         // If it's after Feb in a leap year, adjust
         if(isLeapYear(y)) { 
@@ -133,9 +160,44 @@ namespace timeAndDate {
         return {month: ddmm.month, day: ddmm.day, year: y, hour: hoursFromStartOfDay, minute: minutesFromStartOfHour, second: secondsSinceStartOfMinute, dayOfYear: daysFromStartOfYear}
     }
 
+    // TODO: This will map to a shim and more accurate version on MB (in C++)
     function timeInSeconds() : number {
         return Math.floor(input.runningTime()/1000)
     }
+
+
+
+
+
+    // ********* Misc. Utility Functions for formatting ************************
+    function leftZeroPadTo(inp: number, digits: number) {
+        let value = inp + ""
+        while (value.length < digits) {
+            value = "0" + value
+        }
+        return value
+    }
+
+    function dayOfWeek(m: number, d: number, y: number): number {
+        // f = k + [(13 * m - 1) / 5] + D + [D / 4] + [C / 4] - 2 * C.
+        // Zeller's Rule from http://mathforum.org/dr.math/faq/faq.calendar.html
+        let D = y % 100
+        let C = Math.floor(y / 100)
+        // Use integer division
+        return d + Math.floor((13 * m - 1) / 5) + D + Math.floor(D / 4) + Math.floor(C / 4) - 2 * C
+    }
+
+    function fullTime(t: DateTime): string {
+        return leftZeroPadTo(t.hour, 2) + ":" + leftZeroPadTo(t.minute, 2) + "." + leftZeroPadTo(t.second, 2)
+    }
+    function fullYear(t: DateTime): string {
+        return leftZeroPadTo(t.year, 4) + "-" + leftZeroPadTo(t.month, 2) + "-" + leftZeroPadTo(t.day, 2)
+    }
+
+
+
+
+    // ********* Exposed blocks ************************
 
     //% block="set time from 24-hour time |  %hour | : %minute | . %second"
     //% hour.min=0 hour.max=23
@@ -147,11 +209,6 @@ namespace timeAndDate {
         cpuTimeAtSetpoint = cpuTime
         timeToSetpoint = secondsSoFarForYear(t.month, t.day, t.year, hour, minute, second)
     }
-
-
-function DateTimeString(t: DateTime) : string {
-    return t.month + "/" + t.day + "/" + t.year + " " + t.hour + ":" + t.minute + "." + t.second + "  " + t.dayOfYear
-}
 
     //% block="set date to | Month %month | / Day %day | / Year %tyear"
     //% month.min=1 month.max=12
@@ -189,27 +246,14 @@ function DateTimeString(t: DateTime) : string {
         cpuTimeAtSetpoint -= amount * units[unit]
     }
 
-
-
-
-
     //% block="current time as numbers $hour:$minute.$second on $weekday, $day/$month/$year, $dayOfYear" advanced=true
     //% draggableParameters=variable
     //% handlerStatement=1
     export function numericTime(handler: (hour: number, minute: number, second: number, weekday: number, day: number, month: number, year: number, dayOfYear: number) => void) {
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
-        handler(t.hour, t.minute, t.second, 0, t.day, t.month, t.year, t.dayOfYear)
+        handler(t.hour, t.minute, t.second, dayOfWeek(t.month, t.day, t.year), t.day, t.month, t.year, t.dayOfYear)
     }
-
-    function leftZeroPadTo(inp: number, digits: number) {
-        let value = inp + ""
-        while(value.length<digits) {
-            value = "0"+value
-        }
-        return value
-    }
-
 
     //% block="current time $format"
     export function time(format: TimeFormat): string {
@@ -217,7 +261,7 @@ function DateTimeString(t: DateTime) : string {
         const t = timeFor(cpuTime)
         switch(format) {
             case TimeFormat.HHMM24hr:
-                return leftZeroPadTo(t.hour,2) + ":" + leftZeroPadTo(t.minute, 2) + "." + leftZeroPadTo(t.second,2)
+                return fullTime(t)
                 break
             case TimeFormat.AMPM:
                 let hour = t.hour
@@ -228,7 +272,7 @@ function DateTimeString(t: DateTime) : string {
                     hour = t.hour-12
                 }
                 return hour + ":" + leftZeroPadTo(t.minute, 2) + "." + leftZeroPadTo(t.second, 2) + ap
-            break
+                break
         }
     }
 
@@ -236,7 +280,17 @@ function DateTimeString(t: DateTime) : string {
     export function date(format: DateFormat): string {
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
-        // TODO
+        switch(format) {
+            case DateFormat.MD:
+                return t.month + "/" + t.day
+                break
+            case DateFormat.MDYYYY:
+                return t.month + "/" + t.day + "/" + t.year
+                break
+            case DateFormat.YYYY_MM_DD:
+                return fullYear(t)
+                break
+        }
         return ""
     }
 
@@ -244,17 +298,13 @@ function DateTimeString(t: DateTime) : string {
     export function dateTime(): string {
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
-        return leftZeroPadTo(t.year, 4) + "-" + leftZeroPadTo(t.month, 2) + "-" + leftZeroPadTo(t.day, 2) + " " +
-            leftZeroPadTo(t.hour, 2) + ":" + leftZeroPadTo(t.minute, 2) + "." + leftZeroPadTo(t.second, 2)
+        return fullYear(t) + " " + fullTime(t)
     }
 
     //% block="minute changed" advanced=true
     export function onMinuteChanged(handler: () => void) {
 
     }
-
-    // //% block="second changed" advanced=true
-    // export function onSecondChanged(handler: () => void) {
 
     // }
     //% block="hour changed" advanced=true
@@ -265,18 +315,5 @@ function DateTimeString(t: DateTime) : string {
     export function onDayChanged(handler: () => void) {
 
     }
-
-    /**
-     * 
-def dayOfWeek(m, d, y):
-    # f = k + [(13*m-1)/5] + D + [D/4] + [C/4] - 2*C.
-    # Zeller's Rule from http://mathforum.org/dr.math/faq/faq.calendar.html
-    D = y%100
-    C = y//100
-    # Use integer division
-    return d + (13*m-1)//5 + D + D//4 + C//4 - 2*C
-
-
-     */
 
 }
