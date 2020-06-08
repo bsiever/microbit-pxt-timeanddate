@@ -225,6 +225,9 @@ namespace timeAndDate {
     //% minute.min=0 minute.max=59 minute.defl=30
     //% second.min=0 second.max=59 second.defl=0
     export function set24HourTime(hour: number, minute: number, second: number) {
+        hour = hour%24
+        minute = minute%60
+        second = second%60
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
         cpuTimeAtSetpoint = cpuTime
@@ -233,12 +236,17 @@ namespace timeAndDate {
 
     /**
      * Set the date
+     * @param month the month 1-12
+     * @param day the day of the month 1-31
+     * @param the year 2020-2050
      */
     //% block="set date to | Month %month | / Day %day | / Year %year"
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
     //% year.min=2020 year.max=2050 year.defl=2020
     export function setDate(month: number, day: number, year: number) {
+        month = month%13
+        day = day%32 
         const cpuTime = timeInSeconds()
         const t = timeFor(cpuTime)
         startYear = year
@@ -248,6 +256,10 @@ namespace timeAndDate {
 
     /**
      * Set the time using am/pm format
+     * @param hour the hour (1-12)
+     * @param minute the minute (0-59)
+     * @param second the second (0-59)
+     * @param ampm morning or night
      */
     //% block="set time to |  %hour | : %minute | . %second | %ampm"
     //% hour.min=1 hour.max=12 hour.defl=11
@@ -255,6 +267,7 @@ namespace timeAndDate {
     //% second.min=0 second.max=59 second.defl=0
     //% inlineInputMode=inline
     export function setTime(hour: number, minute: number, second: number, ampm: MornNight) {
+        hour = hour%13
         // Adjust to 24-hour time format
         if (ampm == MornNight.AM && hour == 12) {  // 12am -> 0 hundred hours
             hour = 0;
@@ -266,6 +279,8 @@ namespace timeAndDate {
 
     /**
      * Advance the time by the given amount (note: this could "roll-over" to other aspects of time/date).  Negative values will cause time to go backward.
+     * @param amount the amount of time to add (or subtract if negative)
+     * @param unit the unit of time
      */
     //% block="advance time/date by | %amount | %unit "
     export function advanceBy(amount: number, unit: TimeUnit) {
@@ -287,6 +302,7 @@ namespace timeAndDate {
 
     /**
      * Current time as a string in the specified format
+     * @param format the format to use
      */
     //% block="current time $format"
     export function time(format: TimeFormat): string {
@@ -311,6 +327,7 @@ namespace timeAndDate {
 
     /**
      * Current date as a string in the specified format
+     * @param format the format to use
      */
     //% block="current date formatted $format"
     export function date(format: DateFormat): string {
