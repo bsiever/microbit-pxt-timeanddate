@@ -4,7 +4,7 @@
 
 There are three approaches to setting the time:
 
-1. Synchronize at startup
+1. Synchronize at startup 
 2. Time advancing / rewinding 
 3. Digit count up / count down on digits
 
@@ -12,11 +12,19 @@ Using a reasonable "startup value" as described in [Synchronize at startup](#syn
 
 ### Synchronize at startup
 
-This is the easiest way to synchronize the time. 
+Synchronizing the time at startup is the easiest approach, but it requires re-programming the micro:bit everytime the time needs to be set (like whenever it is restarted).  The `startup` will include blocks to set the time, like:
+
 ```blocks
 timeAndDate.setDate(1, 20, 2020)
 timeAndDate.set24HourTime(13, 30, 0)
 ```
+Setting the date can be left out if there's no need to keep track of the date. 
+
+Once you're ready to program the micro:bit select a time that is approximately 1 minute in  the future.  Program the micro:bit and then watch the time carefully until about 2 seconds before the time that was programmed.  Push the reset button on the back of the micro:bit, which will cause it to restart.  The micro:bit takes about 2 seconds to start, which will set the clock to the desired time at almost exactly that time.
+
+
+
+
 
 ## TODO
 
