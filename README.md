@@ -104,7 +104,7 @@ For example, an experiment recoding temperature every 10 minutes for a week shou
 ### ~
 
 ## Accessing numeric values of time / date
-
+ 
 Accessing the numeric values of time/date can be useful for things like alarm clocks.  The ``current time as numbers``
 is used.  It access all parts of the day/time at once and provides variables containing them. 
 
