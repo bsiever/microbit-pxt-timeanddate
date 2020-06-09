@@ -90,7 +90,6 @@ namespace timeAndDate {
     type DayOfYear = uint16 // 1-366
 
     type SecondsCount = uint32 // Seconds since start of start year
-
     type Weekday = uint8 // Weekday code. 0=Sunday, 1=Monday, etc.
 
     interface DateTime {
