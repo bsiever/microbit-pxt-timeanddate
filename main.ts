@@ -229,10 +229,18 @@ namespace timeAndDate {
     function dayOfWeek(m: number, d: number, y: number): number {
         // f = k + [(13 * m - 1) / 5] + D + [D / 4] + [C / 4] - 2 * C.
         // Zeller's Rule from http://mathforum.org/dr.math/faq/faq.calendar.html
+
         let D = y % 100
+        if(m<3) {
+          m += 10
+          D -= 1
+        } else { 
+          m -= 2
+        }
         let C = Math.idiv(y, 100)
         // Use integer division
-        return d + Math.idiv((13 * m - 1), 5) + D + Math.idiv(D, 4) + Math.idiv(C, 4) - 2 * C
+        let f = d + Math.floor((13 * m - 1)/5) + D + Math.floor(D / 4) + Math.floor(C / 4) - 2 * C
+        return f%7
     }
 
     function fullTime(t: DateTime): string {
@@ -327,7 +335,7 @@ namespace timeAndDate {
     //% block="advance time/date by | %amount | %unit "
     export function advanceBy(amount: number, unit: TimeUnit) {
         const units = [0, 1, 60 * 1, 60 * 60 * 1, 24 * 60 * 60 * 1]
-        cpuTimeAtSetpoint -= amount * units[unit]
+        timeToSetpoint += amount * units[unit]
     }
 
     /**
