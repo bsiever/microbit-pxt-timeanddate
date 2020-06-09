@@ -285,6 +285,7 @@ namespace timeAndDate {
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
     //% year.min=2020 year.max=2050 year.defl=2020
+    //% help=test
     export function setDate(month: number, day: number, year: number) {
         month = month % 13
         day = day % 32
