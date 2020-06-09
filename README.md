@@ -34,6 +34,7 @@ For example, the time could be set by advancing or backing it up one minute at a
 input.onButtonPressed(Button.A, function () {
     timeAndDate.advanceBy(1, timeAndDate.TimeUnit.Minutes)
 })
+
 input.onButtonPressed(Button.B, function () {
     timeAndDate.advanceBy(-1, timeAndDate.TimeUnit.Minutes)
 })
@@ -51,6 +52,7 @@ input.onButtonPressed(Button.B, function () {
         timeAndDate.set24HourTime(hour, minute + -1, second)
     })
 })
+
 input.onButtonPressed(Button.A, function () {
     timeAndDate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
         timeAndDate.set24HourTime(hour, minute + 1, second)
