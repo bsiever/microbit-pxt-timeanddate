@@ -21,17 +21,24 @@ namespace timeAndDate
         static uint32_t lastUs = 0;
         static uint64_t totalUs = 0;
         uint32_t currentUs = us_ticker_read();
-        
-        uint32_t newUs;
-        // An overflow occurred
-        if(currentUs<0x8FFFFFFF && lastUs>0x8FFFFFFF) {
-            newUs = 0xFFFFFFFF - lastUs + 1 + currentUs;
-        } else {
-            newUs = currentUs - lastUs;
-        }
+
+        uint32_t newUs = currentUs - lastUs;
         totalUs += newUs;
         lastUs = currentUs;
-        // Convert uS into seconds
+        // An overflow occurred
+        // if(currentUs<0x7FFFFFFF && lastUs>0x7FFFFFFF) {
+        //     newUs = 0xFFFFFFFF - lastUs + 1 + currentUs;
+        // } else {
+        //     newUs = currentUs - lastUs;
+        // }
+        //  newUs = currentUs - lastUs;
+        // // If an error occurred skip this update.  (Should we update lastUs in either case???)
+        // // if(newUs < 100*1000000) {
+        //      totalUs += newUs;
+        //      lastUs = currentUs;
+        // // }
+        // // Convert uS into seconds
+        // // return totalUs / 1000000;
         return totalUs / 1000000;
     }
 } // namespace timeAndDate

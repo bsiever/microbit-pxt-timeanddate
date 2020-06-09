@@ -449,12 +449,12 @@ namespace timeAndDate {
      * Seconds since start of year  
      */
     //% block="seconds since year" advanced=true
-    export function secondsSinceYear(): string {
+    export function secondsSinceYear(): number {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
         const deltaTime = cpuTime - cpuTimeAtSetpoint
         let sSinceStartOfYear = timeToSetpoint + deltaTime
-        return sSinceStartOfYear + ""
+        return sSinceStartOfYear
     }
     // TODO: Remove
 
@@ -462,9 +462,8 @@ namespace timeAndDate {
      * Seconds since start of CPU  
      */
     //% block="seconds since CPU start" advanced=true
-    export function secondsSinceReset(): string {
-        const cpuTime = cpuTimeInSeconds()
-        return cpuTime + ""
+    export function secondsSinceReset(): number {
+        return cpuTimeInSeconds()
     }
 
     // ********************************************************
