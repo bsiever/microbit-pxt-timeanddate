@@ -429,6 +429,34 @@ namespace timeAndDate {
         return fullYear(t) + " " + fullTime(t)
     }
 
+
+
+// ***************** These are just for debugging / evaluate problems in API
+// TODO: Remove
+    /**
+     * Seconds since start of year  
+     */
+    //% block="seconds since year" advanced=true
+    export function secondsSinceYear(): string {
+        const cpuTime = cpuTimeInSeconds()
+        const t = timeFor(cpuTime)
+        const deltaTime = cpuTime - cpuTimeAtSetpoint
+        let sSinceStartOfYear = timeToSetpoint + deltaTime
+        return sSinceStartOfYear+""
+    }
+// TODO: Remove
+
+    /**
+     * Seconds since start of CPU  
+     */
+    //% block="seconds since CPU start" advanced=true
+    export function secondsSinceReset(): string {
+        const cpuTime = cpuTimeInSeconds()
+        return cpuTime + ""
+    }
+
+// ********************************************************
+
     /**
      * Called when minutes change
      */
