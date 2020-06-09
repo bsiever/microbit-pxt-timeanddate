@@ -20,7 +20,7 @@ namespace timeAndDate
     uint32_t cpuTimeInSeconds() {
         static uint32_t lastTicks = 0;
         static uint64_t totalTicks = 0;
-        uint32_t currentTicks =  *((uint32_t*)0x40011504L);  // NRF_RTC1->COUNTER;
+        uint32_t currentTicks =  NRF_RTC1->COUNTER; // *((uint32_t*)0x40011504L); 
 
         // Only update if it's not an overflow condition
         if(currentTicks != 0xFFFFF0) { blerg
