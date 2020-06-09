@@ -81,23 +81,37 @@ namespace timeAndDate {
         YYYY_MM_DD
     }
 
+    type Month = uint8   // 1-12 Month of year
+    type Day = uint8     // 1-31 / Day of month
+    type Year = uint16 // Assumed to be 2020-2299
+    type Hour = uint8  // 0-23 / 24-hour format  
+    type Minute = uint8 // 0-59 
+    type Second = uint8 // 0-59
+    type DayOfYear = uint16 // 1-366
+    type SecondsCount = uint32 // Seconds since start of start year
+    type Weekday = uint8 // Weekday code. 0=Sunday, 1=Monday, etc.
+
     interface DateTime {
-        month: uint8   // 1-12 Month of year
-        day: uint8   // 1-31 / Day of month
-        year: uint16  // Assumed to be 2020 or later
-        hour: uint8   // 0-23 / 24-hour format  
-        minute: uint8   // 0-59 
-        second: uint8   // 0-59
-        dayOfYear: uint16  // 1-366
+        month: Month   // 1-12 Month of year
+        day: Day   // 1-31 / Day of month
+        year: Year  // Assumed to be 2020 or later
+        hour: Hour   // 0-23 / 24-hour format  
+        minute: Minute   // 0-59 
+        second: Second   // 0-59
+        dayOfYear: DayOfYear  // 1-366
     }
 
+    interface MonthDay {
+        month: Month   // 1-12 Month of year
+        day: Day   // 1-31 / Day of month
+    }
 
     // ********* State Variables ************************
 
     // State variables to manage time 
-    let startYear: uint16 = 0
-    let timeToSetpoint: uint32 = 0
-    let cpuTimeAtSetpoint: uint32 = 0
+    let startYear: Year = 0
+    let timeToSetpoint: SecondsCount = 0
+    let cpuTimeAtSetpoint: SecondsCount = 0
 
     /*    
     Time is all relative to the "start year" that is set by setDate() as follows:
@@ -119,26 +133,27 @@ namespace timeAndDate {
      */
 
     // State for event handlers 
-    let lastUpdateMinute: uint8 = 100   // Set to invalid values
-    let lastUpdateHour: uint8 = 100
-    let lastUpdateDay: uint8 = 100
+    let lastUpdateMinute: Minute = 100   // Set to invalid values
+    let lastUpdateHour: Hour = 100
+    let lastUpdateDay: Day = 100
     let minuteChangeHandler: Action = null
     let hourChangeHandler: Action = null
     let dayChangeHandler: Action = null
 
 
     // Cummulative Days of Year (cdoy): Table of month (1-based indices) to cummulative completed days prior to month
-    const cdoy: uint16[] = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365]
+    const cdoy: DayOfYear[] = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365]
 
     // ********* Time Calculation / Management ************************
 
 
-
-    function isLeapYear(y: number): boolean {
-        return (y % 400 == 0 || (y % 100 != 0 && y % 4 == 0))
+    function isLeapYear(y: Year): boolean {
+        // The /400 and /100 rules don't come into play until 2400 and 2300.  We can ignore them here
+        // return (y % 400 == 0 || (y % 100 != 0 && y % 4 == 0))
+        return y % 4 == 0
     }
 
-    function dateToDayOfYear(m: number, d: number, y: number) {
+    function dateToDayOfYear(m: Month, d: Day, y: Year) {
         // Assumes a valid date
         let dayOfYear = cdoy[m] + d
         // Handle after Feb in leap years:
@@ -149,11 +164,11 @@ namespace timeAndDate {
     }
 
     // Returns a DateTime with just Month/Year (others 0)
-    function dayOfYearToMonthAndDay(d: number, y: number): DateTime {
+    function dayOfYearToMonthAndDay(d: DayOfYear, y: Year): MonthDay {
         // If it's after Feb in a leap year, adjust
         if (isLeapYear(y)) {
             if (d == 60) {
-                return { month: 2, day: 29, year: 0, hour: 0, minute: 0, second: 0, dayOfYear: 0 }
+                return { month: 2, day: 29 }
             } else if (d > 60) {
                 d -= 1  // Adjust for leap day
             }
@@ -161,19 +176,19 @@ namespace timeAndDate {
         for (let i = 1; i < cdoy.length; i++) {  // Adjust for 1- based index
             // If the day lands in (not through) this month, return it
             if (d <= cdoy[i + 1]) {
-                return { month: i, day: d - cdoy[i], year: 0, hour: 0, minute: 0, second: 0, dayOfYear: 0 }
+                return { month: i, day: d - cdoy[i] }
 
             }
         }
-        return { month: -1, day: -1, year: 0, hour: 0, minute: 0, second: 0, dayOfYear: 0 }
+        return { month: -1, day: -1 }
     }
 
-    function secondsSoFarForYear(m: number, d: number, y: number, hh: number, mm: number, ss: number): number {
+    function secondsSoFarForYear(m: Month, d: Day, y: Year, hh: Hour, mm: Minute, ss: Second): SecondsCount {
         // ((((Complete Days * 24hrs/ day)+complete hours)*60min/ hr)+complete minutes)* 60s/ min + complete seconds
         return (((dateToDayOfYear(m, d, y) - 1) * 24 + hh) * 60 + mm) * 60 + ss
     }
 
-    function timeFor(cpuTime: number): DateTime {
+    function timeFor(cpuTime: SecondsCount): DateTime {
         const deltaTime = cpuTime - cpuTimeAtSetpoint
         let sSinceStartOfYear = timeToSetpoint + deltaTime
         // Find elapsed years by counting up from start year and subtracting off complete years
@@ -226,21 +241,21 @@ namespace timeAndDate {
         return value
     }
 
-    function dayOfWeek(m: number, d: number, y: number): number {
+    function dayOfWeek(m: Month, d: Day, y: Year): number {
         // f = k + [(13 * m - 1) / 5] + D + [D / 4] + [C / 4] - 2 * C.
         // Zeller's Rule from http://mathforum.org/dr.math/faq/faq.calendar.html
 
         let D = y % 100
-        if(m<3) {
-          m += 10
-          D -= 1
-        } else { 
-          m -= 2
+        if (m < 3) {
+            m += 10
+            D -= 1
+        } else {
+            m -= 2
         }
         let C = Math.idiv(y, 100)
         // Use integer division
-        let f = d + Math.floor((13 * m - 1)/5) + D + Math.floor(D / 4) + Math.floor(C / 4) - 2 * C
-        return f%7
+        let f = d + Math.floor((13 * m - 1) / 5) + D + Math.floor(D / 4) + Math.floor(C / 4) - 2 * C
+        return f % 7
     }
 
     function fullTime(t: DateTime): string {
@@ -273,7 +288,7 @@ namespace timeAndDate {
     //% hour.min=0 hour.max=23 hour.defl=13
     //% minute.min=0 minute.max=59 minute.defl=30
     //% second.min=0 second.max=59 second.defl=0
-    export function set24HourTime(hour: number, minute: number, second: number) {
+    export function set24HourTime(hour: Hour, minute: Minute, second: Second) {
         hour = hour % 24
         minute = minute % 60
         second = second % 60
@@ -294,7 +309,7 @@ namespace timeAndDate {
     //% day.min=1 day.max=31 day.defl=20
     //% year.min=2020 year.max=2050 year.defl=2020
     //% help=test
-    export function setDate(month: number, day: number, year: number) {
+    export function setDate(month: Month, day: Day, year: Year) {
         month = month % 13
         day = day % 32
         const cpuTime = cpuTimeInSeconds()
@@ -316,7 +331,7 @@ namespace timeAndDate {
     //% minute.min=0 minute.max=59 minute.defl=30
     //% second.min=0 second.max=59 second.defl=0
     //% inlineInputMode=inline
-    export function setTime(hour: number, minute: number, second: number, ampm: MornNight) {
+    export function setTime(hour: Hour, minute: Minute, second: Second, ampm: MornNight) {
         hour = hour % 13
         // Adjust to 24-hour time format
         if (ampm == MornNight.AM && hour == 12) {  // 12am -> 0 hundred hours
@@ -344,7 +359,7 @@ namespace timeAndDate {
     //% block="current time as numbers $hour:$minute.$second on $weekday, $day/$month/$year, $dayOfYear" advanced=true
     //% draggableParameters=variable
     //% handlerStatement=1
-    export function numericTime(handler: (hour: number, minute: number, second: number, weekday: number, day: number, month: number, year: number, dayOfYear: number) => void) {
+    export function numericTime(handler: (hour: Hour, minute: Minute, second: Second, weekday: Weekday, day: Day, month: Month, year: Year, dayOfYear: DayOfYear) => void) {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
         handler(t.hour, t.minute, t.second, dayOfWeek(t.month, t.day, t.year), t.day, t.month, t.year, t.dayOfYear)
@@ -431,8 +446,8 @@ namespace timeAndDate {
 
 
 
-// ***************** These are just for debugging / evaluate problems in API
-// TODO: Remove
+    // ***************** These are just for debugging / evaluate problems in API
+    // TODO: Remove
     /**
      * Seconds since start of year  
      */
@@ -442,9 +457,9 @@ namespace timeAndDate {
         const t = timeFor(cpuTime)
         const deltaTime = cpuTime - cpuTimeAtSetpoint
         let sSinceStartOfYear = timeToSetpoint + deltaTime
-        return sSinceStartOfYear+""
+        return sSinceStartOfYear + ""
     }
-// TODO: Remove
+    // TODO: Remove
 
     /**
      * Seconds since start of CPU  
@@ -455,7 +470,7 @@ namespace timeAndDate {
         return cpuTime + ""
     }
 
-// ********************************************************
+    // ********************************************************
 
     /**
      * Called when minutes change
