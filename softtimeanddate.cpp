@@ -18,26 +18,20 @@ namespace timeAndDate
     */
     //%
     uint32_t cpuTimeInSeconds() {
+        static uint32_t lastUs = 0;
+        static uint64_t totalUs = 0;
         uint32_t currentUs = us_ticker_read();
-        return currentUs;
         
-        // static uint32_t lastTicks = 0;
-        // static uint64_t totalTicks = 0;
-        // uint32_t currentTicks =  NRF_RTC1->COUNTER; // *((uint32_t*)0x40011504L); 
-
-        // // Only update if it's not an overflow condition
-        // if(currentTicks != 0xFFFFF0) { 
-        //     uint32_t newTicks;
-        //     // An overflow occurred
-        //     if(currentTicks<lastTicks) {
-        //         newTicks = 0x1000000 - lastTicks + currentTicks;
-        //     } else {
-        //         newTicks = currentTicks - lastTicks;
-        //     }
-        //     totalTicks += newTicks;
-        //     lastTicks = currentTicks;
-        // }
-        // // Convert ticks into seconds
-        // return totalTicks;
+        uint32_t newUs;
+        // An overflow occurred
+        if(currentUs<lastUs) {
+            newUs = 0xFFFFFFFF - lastUs + 1 + currentUs;
+        } else {
+            newUs = currentUs - lastUs;
+        }
+        totalUs += newUs;
+        lastUs = currentUs;
+        // Convert uS into seconds
+        return totalUs / 1000000;
     }
 } // namespace timeAndDate
