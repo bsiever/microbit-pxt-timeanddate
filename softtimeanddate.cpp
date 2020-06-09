@@ -24,7 +24,7 @@ namespace timeAndDate
         
         uint32_t newUs;
         // An overflow occurred
-        if(currentUs<lastUs) {
+        if(currentUs<0x8FFFFFFF && lastUs>0x8FFFFFFF) {
             newUs = 0xFFFFFFFF - lastUs + 1 + currentUs;
         } else {
             newUs = currentUs - lastUs;
