@@ -61,7 +61,6 @@ input.onButtonPressed(Button.A, function () {
 Since the time setting blocks use modular arithmetic, adding and subtracting to the prior value will 
 "roll over" in the expected way (and will not impact the hours, like the adding approach would)
 
-
 ## TODO
 
 - [ ] Add a reference for your blocks here
