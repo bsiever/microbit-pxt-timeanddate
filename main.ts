@@ -88,6 +88,7 @@ namespace timeAndDate {
     type Minute = uint8 // 0-59 
     type Second = uint8 // 0-59
     type DayOfYear = uint16 // 1-366
+
     type SecondsCount = uint32 // Seconds since start of start year
     type Weekday = uint8 // Weekday code. 0=Sunday, 1=Monday, etc.
 
@@ -228,10 +229,6 @@ namespace timeAndDate {
         return Math.idiv(input.runningTime(), 1000)
     }
 
-
-
-
-
     // ********* Misc. Utility Functions for formatting ************************
     function leftZeroPadTo(inp: number, digits: number) {
         let value = inp + ""
@@ -241,7 +238,7 @@ namespace timeAndDate {
         return value
     }
 
-    function dayOfWeek(m: Month, d: Day, y: Year): number {
+    function dayOfWeek(m: Month, d: Day, y: Year): Weekday {
         // f = k + [(13 * m - 1) / 5] + D + [D / 4] + [C / 4] - 2 * C.
         // Zeller's Rule from http://mathforum.org/dr.math/faq/faq.calendar.html
 
