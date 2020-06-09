@@ -63,6 +63,15 @@ input.onButtonPressed(Button.A, function () {
 Since the time setting blocks use modular arithmetic, adding and subtracting to the prior value will 
 "roll over" in the expected way (and will not impact the hours, like the adding approach would)
 
+Note that this may not work correctly when the total time is before the year specified in ``setDate``.  
+That is, if ``setDate`` specifies 2024, then negative values should not "roll back" before Jan 1, 2024. 
+
+# Time stamps
+
+Often a "time stamp" is needed to record events. The ``date and time stamp`` block should be used.  It provides the date and time in the format:
+ YYYY-MM-DD HH:MM.SS.  This format is well suited to sorting and use in spreadsheets.  It also ensures that the date and time are retrieved at the same time 
+ (accessing them separately may lead to a date after the time if the the time is checked at almost exactly the end of
+ the day).
 
 ## Accessing numeric values of time / date
 
@@ -97,9 +106,6 @@ Read more at https://makecode.microbit.org/extensions
 ## Supported targets
 
 * for PXT/microbit
-(The metadata above is needed for package search.)
-
-
 
 ## Misc Links & References
 
