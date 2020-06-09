@@ -11,24 +11,32 @@
 
 using namespace pxt;
 
+extern uint64_t common_rtc_64bit_us_get(void);
 
-namespace timeAndDate {
+namespace timeAndDate
+{
     /* 
        Return the current system CPU time in s 
     */
     //%
     uint32_t cpuTimeInSeconds() {
-        static uint32_t upperTimeUS = 0;    
-        static uint32_t lastTimeUS = 0;
-        uint32_t thisTimeUS = us_ticker_read();
-        
-        // Check for rollover
-        if(thisTimeUS<lastTimeUS) {
-            upperTimeUS++;
-        }
-        lastTimeUS = thisTimeUS;
+         static uint32_t lastTicks = 0;
+        static uint64_t totalTicks = 0;
+        uint32_t currentTicks = NRF_RTC1->COUNTER;
 
-        uint64_t timeUS = ((uint64_t)upperTimeUS)<<32 | ((uint64_t)thisTimeUS);
-        return (uint32_t)(timeUS/1000000);
+        // Only update if it's not an overflow condition
+        if(currentTicks != 0xFFFFF0) {
+            uint32_t newTicks;
+            // An overflow occurred
+            if(currentTicks<lastTicks) {
+                newTicks = 0x1000000 - lastTicks + currentTicks;
+            } else {
+                newTicks = currentTicks - lastTicks;
+            }
+            totalTicks += newTicks;
+            lastTicks = currentTicks;
+        }
+        // Convert ticks into seconds
+        return totalTicks / 32768;
     }
-}
+} // namespace timeAndDate
