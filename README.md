@@ -4,10 +4,15 @@
 
 There are three approaches to setting the time:
 
-1. Synchronizing 
+1. Synchronize at startup
+2. Time advancing / rewinding 
+3. Digit count up / count down on digits
 
-### Synchronizing
+Using a reasonable "startup value" as described in [Synchronize at startup](#synchronize-at-startup) will make the last two approaches easier.
 
+### Synchronize at startup
+
+This is the easiest way to synchronize the time. 
 ```blocks
 timeAndDate.setDate(1, 20, 2020)
 timeAndDate.set24HourTime(13, 30, 0)
