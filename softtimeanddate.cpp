@@ -9,6 +9,9 @@
 
 #include "pxt.h"
 
+#include "Microbit.h"
+extern Microbit uBit;
+
 using namespace pxt;
 
 namespace timeAndDate
@@ -23,7 +26,6 @@ namespace timeAndDate
         uint32_t currentUs = us_ticker_read();
 
         uint32_t newUs = currentUs - lastUs;
-        totalUs += newUs;
         lastUs = currentUs;
         // An overflow occurred
         // if(currentUs<0x7FFFFFFF && lastUs>0x7FFFFFFF) {
