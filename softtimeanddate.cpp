@@ -58,6 +58,7 @@ namespace timeAndDate
         if(!(newUs & 0x80000000)) {
             // Only add if it's positive / valid...
             totalUs += newUs; 
+            lastUs = currentUs;
         }
 #ifdef DEBUG
         else {
@@ -68,7 +69,6 @@ namespace timeAndDate
             uBit.serial.send("\n");
         }
 #endif
-        lastUs = currentUs;
 
         return totalUs / 1000000;
     }
