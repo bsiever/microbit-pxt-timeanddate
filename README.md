@@ -7,7 +7,7 @@ This set of blocks allows the micro:bit to track the time and date.  They can al
 It's importantant to be aware that:
 - These blocks use a counter that is only accurate to about 250 parts per million, which is approximately 
 22 seconds per day.  The accuracy may change based on the environment (heat/cold) and from micro:bit to micro:bit. If accuracy is important, 
-you can use the stopwatch experiment described below to estimate the accuracy of your micro:bit where you plan to use it. 
+you can use the stopwatch experiment described [below](#measuring-accuracy-and-calibrating) to estimate the accuracy of your micro:bit where you plan to use it. 
 - The time needs to be set each time the micro:bit is re-programmed or restarts.  
 
 ## Setting the Time 
@@ -164,7 +164,7 @@ The ``current time as numbers`` block avoids errors that can occur if separate b
 and another block provided the date, it would be possible to access the time at 23:59.59 on 2020-01-01 and then the date a fraction of time later, 
 when it had changed to 2020-01-02.  The combined date and time would appear to be 23:59.59 on 2020-01-02 even though the 23:59.59 was actually on 2020-01-01.
 
-# Calibrating and Measuring Accuracy
+# Measuring Accuracy and Calibrating
 
 Accuracy can be measured by comparing your micro:bit in a stable environment to an actual, accurate stopwatch.  
 
@@ -267,10 +267,12 @@ timeAndDate.set24HourTime(0, 0, 0)
 
 # Challenges
 
-
 1. Create a program that will allow the time to be set wen A+B are pressed.  After that, pressing "A" should advance the hour
 and pressing "B" should advance the minute.  Pressing "A+B" again should change the mode back to just keeping time (not allow hour/minute
 to be changed.)
+2. Create an alarm clock!
+3. Add a snooze feature to your alarm clock!
+3. Create an adjustable alarm clork that allows the alarm time to be changed without reprogramming. 
 
 # Binary clock 
 
