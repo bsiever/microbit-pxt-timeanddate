@@ -1,6 +1,6 @@
 {
     "name": "microbit-pxt-softclock",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Software based Real-Time Clock (Time & Date)",
     "dependencies": {
         "core": "*"
