@@ -192,6 +192,8 @@ while (!(input.buttonIsPressed(Button.AB))) {
 }
 ```
 
+# Stop watch features & behavior
+
 
 ## TODO
 
