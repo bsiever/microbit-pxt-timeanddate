@@ -120,6 +120,79 @@ and another block provided the date, it would be possible to access the time at 
 when it had changed to 2020-01-02.  The combined date and time would appear to be 23:59.59 on 2020-01-02 even though the 23:59.59 was actually on 2020-01-01.
 
 
+# Calibrating and Measuring Drift
+
+The clock isn't accurate... Drift can be measured with a simple stop watch and the following program:
+
+```blocks
+input.onButtonPressed(Button.A, function () {
+    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HHMMSS24hr))
+})
+input.onButtonPressed(Button.B, function () {
+    basic.clearScreen()
+})
+basic.showIcon(IconNames.Heart)
+timeAndDate.set24HourTime(0, 0, 0)
+```
+
+The goal is to compare the time kept by the micro:bit with an accurate stopwatch (most cell phones include a stopwatch as part of the 
+clock or as a stand alone app)
+
+After programming the micro:bit, press the "reset" button on its back.  As soon as you see the Heart Icon, start the stop watch.  They 
+should now be in sync.  After a few seconds look at the stop watch time and press the "A" button at a precise time, such as at 1 minute.  
+
+Note the time that scrolls across the micro:bit screen.  It should match the time on the stop watch the instant you pushed the "A" button. 
+
+Leave the micro:bit running for several hours or days (perhaps with batter or via a USB cable to a power source).  Periodically note the time and try to estimate 
+how much "Drift" occurs.  Is the micro:bit ahead or behind the stopwatch after a day?  How far is it off? 
+
+# Challenges
+
+
+Create a program that will allow the time to be set wen A+B are pressed.  After that, pressing "A" should advance the hour
+and pressing "B" should advance the minute.  Pressing "A+B" again should change the mode back to just keeping time (not allow hour/minute
+to be changed.)
+
+# Setting Hour/Minute at Start
+
+
+The following can be used to set the time at startup.  It will scroll the time continuously until you are done setting it.  
+First set the hour.  Hold "A" to advance it or "B" to decrease it.  When the hour is correct, hole "A+B" until you get the message to set the minute.
+Then repeat the process for the minute.  "A" advances and "B" decreases. When done hold "A+B" until the message stops scrolling.  
+
+There's an extra block that displays the time after pressing "A" to check your work.
+
+
+```blocks
+input.onButtonPressed(Button.A, function () {
+    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMMAMPM))
+})
+timeAndDate.setTime(11, 30, 0, timeAndDate.MornNight.AM)
+basic.showString("Set Hour")
+while (!(input.buttonIsPressed(Button.AB))) {
+    timeAndDate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+        if (input.buttonIsPressed(Button.A)) {
+            timeAndDate.set24HourTime(hour + 1, minute, 0)
+        } else if (input.buttonIsPressed(Button.B)) {
+            timeAndDate.set24HourTime(hour - 1, minute, 0)
+        }
+    })
+    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMMAMPM))
+}
+basic.showString("Set Min")
+while (!(input.buttonIsPressed(Button.AB))) {
+    timeAndDate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+        if (input.buttonIsPressed(Button.A)) {
+            timeAndDate.set24HourTime(hour, minute + 1, 0)
+        } else if (input.buttonIsPressed(Button.B)) {
+            timeAndDate.set24HourTime(hour, minute - 1, 0)
+        }
+    })
+    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMMAMPM))
+}
+```
+
+
 ## TODO
 
 - [ ] Add a reference for your blocks here
