@@ -2,31 +2,39 @@
 
 ## Setting the Time 
 
-There are three approaches to setting the time:
+There are three common approaches to setting the time:
 
-1. Synchronize at startup 
+1. Synchronize at startup (easiest, but requires reprogramming)
 2. Time advancing / rewinding 
 3. Digits count up / count down 
 
-Using a reasonable "startup value" as described in [Synchronize at startup](#synchronize-at-startup) will make the last two approaches easier.
+Using a reasonable "startup value" as described in 
+[Synchronize at startup](#synchronize-at-startup) will make the last two approaches easier.
 
 ### Synchronize at startup
 
 Synchronizing the time at startup is the easiest approach, but it requires re-programming the micro:bit everytime the time needs to be set (like whenever it is restarted).  The `startup` will include blocks to set the time, like:
 
-```block
+```blocks
 timeAndDate.setDate(1, 20, 2020)
 timeAndDate.set24HourTime(13, 30, 0)
 ```
-Setting the date can be left out if there's no need to keep track of the date. 
+Setting the date can be left out if there's no need to keep track of the date, like if you want a 
+wearable that won't display the date. 
 
-Once you're ready to program the micro:bit select a time that is approximately 1 minute in  the future.  Program the micro:bit and then watch the time carefully until about 2 seconds before the time that was programmed.  Push the reset button on the back of the micro:bit, which will cause it to restart.  The micro:bit takes about 2 seconds to start, which will set the clock to the desired time at almost exactly that time.
+Once you're ready to program the micro:bit, update the time/date being used so the time 
+is approximately 1 minute in the future.  Program the micro:bit and then watch the real time 
+carefully.  About 2 seconds before the programmed time press the reset button on the back of the 
+micro:bit. (The micro:bit takes about 2 seconds to restart and will then "set" the time).
+
+For the example blocks above the micro:bit would be reset at 13:29.58s on Jan. 20, 2020.  It would run the two blocks
+that set the date and time at almost exactly the time they indicate. 
 
 ### Time advancing / rewinding 
 
 This is the approach used by mechanical clocks, where time is
- set by moving the hour hand forward (or, possibly, backwards). 
-  This is  a tedious way to set dates and should probably only be used for adjusting the time. 
+ set by moving the hour hand forward (or, possibly, backwards). Moving the minutes forward may cause the hours
+ to change. This is  a tedious way to set dates and should probably only be used for adjusting the time. 
   
 For example, the time could be set by advancing or backing it up one minute at a time using the A and B buttons:
 
@@ -39,6 +47,31 @@ input.onButtonPressed(Button.B, function () {
     timeAndDate.advanceBy(-1, timeAndDate.TimeUnit.Minutes)
 })
 ```
+
+Here's an alternate approach that can be used to set the time at startup by advancing hours.  First hold "A" until 
+the correct hour is shown.  Then hold "B" until the message says "min:". Then hold "A" until the correct minute is shown.  Finally hold "B" again.
+
+```blocks
+input.onButtonPressed(Button.A, function () {
+    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMM))
+})
+basic.showString("hr:")
+while (!(input.buttonIsPressed(Button.B))) {
+    if (input.buttonIsPressed(Button.A)) {
+        timeAndDate.advanceBy(1, timeAndDate.TimeUnit.Hours)
+    }
+    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMM))
+}
+basic.showString("min:")
+while (!(input.buttonIsPressed(Button.B))) {
+    if (input.buttonIsPressed(Button.A)) {
+        timeAndDate.advanceBy(1, timeAndDate.TimeUnit.Minutes)
+    }
+    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMM))
+}
+```
+
+
 
 ### Digits count up / count down 
 
@@ -194,6 +227,76 @@ while (!(input.buttonIsPressed(Button.AB))) {
 
 # Stop watch features & behavior
 
+By use of setting time to 0:0.0 this can be used as a simple stopwatch.  For example, for timing things that are less than 24 hours:
+
+```blocks
+input.onButtonPressed(Button.A, function () {
+    timeAndDate.set24HourTime(0, 0, 0)
+})
+input.onButtonPressed(Button.B, function () {
+    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HHMMSS24hr))
+})
+timeAndDate.set24HourTime(0, 0, 0)
+```
+
+"A" starts counting and "B" shows the time elapsed since "A" was pressed (or the start)
+
+# Binary clock 
+
+```blocks
+function binaryDisplayOf (num: number, col: number) {
+    for (let index = 0; index <= 4; index++) {
+        if (Math.idiv(num, 2 ** index) % 2 == 1) {
+            led.plot(col, 4 - index)
+        } else {
+            led.unplot(col, 4 - index)
+        }
+    }
+}
+input.onButtonPressed(Button.B, function () {
+    timeAndDate.advanceBy(1, timeAndDate.TimeUnit.Minutes)
+})
+input.onButtonPressed(Button.A, function () {
+    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMM))
+})
+input.onButtonPressed(Button.AB, function () {
+    timeAndDate.advanceBy(15, timeAndDate.TimeUnit.Minutes)
+})
+basic.showString("hr:")
+while (!(input.buttonIsPressed(Button.B))) {
+    if (input.buttonIsPressed(Button.A)) {
+        timeAndDate.advanceBy(1, timeAndDate.TimeUnit.Hours)
+    }
+    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMM))
+}
+basic.showString("min:")
+while (!(input.buttonIsPressed(Button.B))) {
+    if (input.buttonIsPressed(Button.A)) {
+        timeAndDate.advanceBy(1, timeAndDate.TimeUnit.Minutes)
+    }
+    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMM))
+}
+let blink = false
+basic.forever(function () {
+    timeAndDate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+        hour = 0 % 12
+        if (hour == 0) {
+            hour = 12
+        }
+        binaryDisplayOf(Math.idiv(hour, 10), 0)
+        binaryDisplayOf(hour % 10, 1)
+        binaryDisplayOf(Math.idiv(minute, 10), 3)
+        binaryDisplayOf(minute % 10, 4)
+    })
+    basic.pause(1000)
+    blink = !(blink)
+    if (blink) {
+        binaryDisplayOf(10, 2)
+    } else {
+        binaryDisplayOf(0, 2)
+    }
+})
+```
 
 ## TODO
 
@@ -201,7 +304,7 @@ while (!(input.buttonIsPressed(Button.AB))) {
 - [X] Add "icon.png" image (300x200) in the root folder
 - [X] Add "- beta" to the GitHub project description if you are still iterating it.
 - [X] Turn on your automated build on https://travis-ci.org
-- [ ] Use "pxt bump" to create a tagged release on GitHub
+- [X] Use "pxt bump" to create a tagged release on GitHub
 - [X] On GitHub, create a new file named LICENSE. Select the MIT License template.
 - [ ] Get your package reviewed and approved https://makecode.microbit.org/extensions/approval
 

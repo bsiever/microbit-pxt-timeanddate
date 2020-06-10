@@ -32,12 +32,11 @@ namespace timeAndDate {
                 dayChangeHandler()
             lastUpdateDay = t.day
         }
-        basic.pause(2000)  // Only run about every 2 s
+        basic.pause(2000)  // Only run about every 2 s;  Micro:bit uses a ticker with a 32kHz period, so the count should increase by about 65kHz
     })
 
 
     // ********* Enumerations for parameter types ************************
-
 
     export enum MornNight {
         //% block="am"
@@ -49,41 +48,41 @@ namespace timeAndDate {
     export enum TimeUnit {
         //% block="ms"
         Milliseconds,
-        //% block="Seconds"
+        //% block="seconds"
         Seconds,
-        //% block="Minutes"
+        //% block="minutes"
         Minutes,
-        //% block="Hours"
+        //% block="hours"
         Hours,
-        //% block="Days"
+        //% block="days"
         Days
     }
 
     export enum TimeFormat {
-        //% block="as H:MM.SS am / pm"
+        //% block="as h:mm.ss am / pm"
         HMMSSAMPM,
-        //% block="as HH:MM 24-hr"
+        //% block="as hh:mm 24-hr"
         HHMM24hr,
-        //% block="as HH:MM.SS 24-hr"
+        //% block="as hh:mm.ss 24-hr"
         HHMMSS24hr,
-        //% block="as H:MM"
+        //% block="as h:mm"
         HMM,
-        //% block="as H:MM am / pm"
+        //% block="as h:mm am / pm"
         HMMAMPM,
     }
 
     export enum DateFormat {
-        //% block="as Month/Day"
+        //% block="as month/day"
         MD,
-        //% block="as Month/Day/Year"
+        //% block="as month/day/year"
         MDYYYY,
-        //% block="as YEAR-MONTH-DAY"
+        //% block="as year-month-day"
         YYYY_MM_DD
     }
 
     type Month = uint8   // 1-12 Month of year
     type Day = uint8     // 1-31 / Day of month
-    type Year = uint16 // Assumed to be 2020-2299
+    type Year = uint16 // Assumed to be 0000-0099 or 2020-2099  
     type Hour = uint8  // 0-23 / 24-hour format  
     type Minute = uint8 // 0-59 
     type Second = uint8 // 0-59
@@ -115,7 +114,7 @@ namespace timeAndDate {
     let cpuTimeAtSetpoint: SecondsCount = 0
 
     /*    
-    Time is all relative to the "start year" that is set by setDate() as follows:
+    Time is all relative to the "start year" that is set by setDate() (or 0 by default) as follows:
 
       Start year          Time Date/Time set        CurrentCPUTime
       |                   | (in s)                  | (in s)
@@ -134,7 +133,7 @@ namespace timeAndDate {
      */
 
     // State for event handlers 
-    let lastUpdateMinute: Minute = 100   // Set to invalid values
+    let lastUpdateMinute: Minute = 100   // Set to invalid values for first update
     let lastUpdateHour: Hour = 100
     let lastUpdateDay: Day = 100
     let minuteChangeHandler: Action = null
@@ -143,14 +142,18 @@ namespace timeAndDate {
 
 
     // Cummulative Days of Year (cdoy): Table of month (1-based indices) to cummulative completed days prior to month
+    // Ex: By Feb 1st (2nd month / index 2), 31 days of Jan are completed. 
     const cdoy: DayOfYear[] = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365]
 
     // ********* Time Calculation / Management ************************
 
 
     function isLeapYear(y: Year): boolean {
-        // The /400 and /100 rules don't come into play until 2400 and 2300.  We can ignore them here
+        // The /400 and /100 rules don't come into play until 2400 and 2300 or 0100.  We can ignore them here
+        // Here's the code for accurate handling of leap years:
         // return (y % 400 == 0 || (y % 100 != 0 && y % 4 == 0))
+
+        // Simplified case for 2020-2099.
         return y % 4 == 0
     }
 
@@ -164,28 +167,30 @@ namespace timeAndDate {
         return dayOfYear
     }
 
-    // Returns a DateTime with just Month/Year (others 0)
+    // Returns a MonthDay with from a DayOfYear and given Year
     function dayOfYearToMonthAndDay(d: DayOfYear, y: Year): MonthDay {
         // If it's after Feb in a leap year, adjust
         if (isLeapYear(y)) {
-            if (d == 60) {
+            if (d == 60) {  // Leap Day!
                 return { month: 2, day: 29 }
             } else if (d > 60) {
                 d -= 1  // Adjust for leap day
             }
         }
-        for (let i = 1; i < cdoy.length; i++) {  // Adjust for 1- based index
+        for (let i = 1; i < cdoy.length; i++) {  // Start at 1 for 1- based index
             // If the day lands in (not through) this month, return it
             if (d <= cdoy[i + 1]) {
                 return { month: i, day: d - cdoy[i] }
 
             }
         }
+        // This should never happen!
         return { month: -1, day: -1 }
     }
 
     function secondsSoFarForYear(m: Month, d: Day, y: Year, hh: Hour, mm: Minute, ss: Second): SecondsCount {
         // ((((Complete Days * 24hrs/ day)+complete hours)*60min/ hr)+complete minutes)* 60s/ min + complete seconds
+        // Yay Horner's Rule!:
         return (((dateToDayOfYear(m, d, y) - 1) * 24 + hh) * 60 + mm) * 60 + ss
     }
 
@@ -205,9 +210,9 @@ namespace timeAndDate {
             leap = isLeapYear(y)
         }
 
-        // sSinceStartOfYear and leap are now for "y", not "year"
+        // sSinceStartOfYear and leap are now for "y", not "year".  Don't yes "year"! Use "y"
         // Find elapsed days
-        const daysFromStartOfYear = Math.idiv(sSinceStartOfYear, (24 * 60 * 60)) + 1  // Offset for 1/1 being day 1
+        const daysFromStartOfYear = Math.idiv(sSinceStartOfYear, (24 * 60 * 60)) + 1  // +1 offset for 1/1 being day 1
         const secondsSinceStartOfDay = sSinceStartOfYear % (24 * 60 * 60)
 
         // Find elapsed hours
@@ -255,28 +260,22 @@ namespace timeAndDate {
         return f % 7
     }
 
+    // 24-hour time:  hh:mm.ss
     function fullTime(t: DateTime): string {
         return leftZeroPadTo(t.hour, 2) + ":" + leftZeroPadTo(t.minute, 2) + "." + leftZeroPadTo(t.second, 2)
     }
 
+    // Full year: yyyy-mm-dd
     function fullYear(t: DateTime): string {
         return leftZeroPadTo(t.year, 4) + "-" + leftZeroPadTo(t.month, 2) + "-" + leftZeroPadTo(t.day, 2)
     }
-
-
 
 
     // ********* Exposed blocks ************************
 
 
     /**
-     * Set the time using 24-hour format. You can "Set" the clock either by:
-     *     a) Programming the micro:bit by setting a date/time that will happen soon in the setup, then pressing the
-     *        reset button on the back of the micro:bit approximately 2 seconds before that time.
-     *        For example, program the micro:bit using 13:00 (1pm) in the setup.  Hit the reset button
-     *        on the back of the micro:bit at 12:59.58 in order for it to start time keeping at 13:00.00
-     *     b) Use the "advance time by" block in conjunction with events to allow the time to increase or decreast.
-     *        For example, use the A and B buttons to add or subtract a minute.
+     * Set the time using 24-hour format. 
      * @param hour the hour (0-23)
      * @param minute the minute (0-59)
      * @param second the second (0-59)
@@ -340,18 +339,22 @@ namespace timeAndDate {
     }
 
     /**
-     * Advance the time by the given amount (note: this could "roll-over" to other aspects of time/date).  Negative values will cause time to go backward.
-     * @param amount the amount of time to add (or subtract if negative).  To avoid roll-over use withT ime and set time in with "+1"
+     * Advance the time by the given amount, which cause "carries" into other aspects of time/date.  Negative values will cause time to go back by the amount.
+     * @param amount the amount of time to add (or subtract if negative).  To avoid "carries" use withTime blocks
      * @param unit the unit of time
      */
     //% block="advance time/date by | $amount | $unit "
     export function advanceBy(amount: number, unit: TimeUnit) {
         const units = [0, 1, 60 * 1, 60 * 60 * 1, 24 * 60 * 60 * 1]
-        timeToSetpoint += amount * units[unit]
+        // Don't let time go negative:
+        if (amount < 0 && (-amount * units[unit]) > timeToSetpoint)
+            timeToSetpoint = 0
+        else
+            timeToSetpoint += amount * units[unit]
     }
 
     /**
-     * Get all values of time as numbers.  This retrieves them all-at-once so they are consistent
+     * Get all values of time as numbers.  
      */
     //% block="current time as numbers $hour:$minute.$second on $weekday, $day/$month/$year, $dayOfYear" advanced=true
     //% draggableParameters=variable
@@ -363,7 +366,7 @@ namespace timeAndDate {
     }
 
     /**
-     * Current time as a string in the specified format
+     * Current time as a string in the format
      * @param format the format to use
      */
     //% block="current time $format"
@@ -409,7 +412,7 @@ namespace timeAndDate {
     }
 
     /**
-     * Current date as a string in the specified format
+     * Current date as a string in the format
      * @param format the format to use
      */
     //% block="current date formatted $format"
@@ -431,30 +434,13 @@ namespace timeAndDate {
     }
 
     /**
-     * Current date and time in a timestamp format, like: YYYY-MM-DD HH:MM.SS.  
-     * This ensures that the date and time are taken at the same instant (that is, no time will have passed so the date will correspond to the time)
+     * Current date and time in a timestamp format (YYYY-MM-DD HH:MM.SS).  
      */
     //% block="date and time stamp"
     export function dateTime(): string {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
         return fullYear(t) + " " + fullTime(t)
-    }
-
-
-
-    // ***************** These are just for debugging / evaluate problems in API
-    // TODO: Remove
-    /**
-     * Seconds since start of year  
-     */
-    //% block="seconds since year" advanced=true
-    export function secondsSinceYear(): number {
-        const cpuTime = cpuTimeInSeconds()
-        const t = timeFor(cpuTime)
-        const deltaTime = cpuTime - cpuTimeAtSetpoint
-        let sSinceStartOfYear = timeToSetpoint + deltaTime
-        return sSinceStartOfYear
     }
 
     /**
@@ -465,7 +451,6 @@ namespace timeAndDate {
         return cpuTimeInSeconds()
     }
 
-    // ********************************************************
 
     /**
      * Called when minutes change
@@ -491,4 +476,19 @@ namespace timeAndDate {
         dayChangeHandler = handler
     }
 
+    // ***************** This was just for debugging / evaluate problems in API
+    // Helpful for debugging / testing
+    // /**
+    //  * Seconds since start of year  
+    //  */
+    // //% block="seconds since year" advanced=true
+    // export function secondsSinceYear(): number {
+    //     const cpuTime = cpuTimeInSeconds()
+    //     const t = timeFor(cpuTime)
+    //     const deltaTime = cpuTime - cpuTimeAtSetpoint
+    //     let sSinceStartOfYear = timeToSetpoint + deltaTime
+    //     return sSinceStartOfYear
+    // }
+
+    // ********************************************************
 }
