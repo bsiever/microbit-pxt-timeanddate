@@ -9,6 +9,9 @@
 
 #include "pxt.h"
 
+#include "Microbit.h"
+extern Microbit uBit;
+
 using namespace pxt;
 
 #define DEBUG 1
@@ -50,7 +53,6 @@ namespace timeAndDate
         uint32_t currentUs = us_ticker_read();
 
         uint32_t newUs = currentUs - lastUs;
-        totalUs += newUs;
         lastUs = currentUs;
         if(newUs>4294000000) {
 #ifdef DEBUG
