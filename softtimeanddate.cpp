@@ -41,6 +41,8 @@ namespace timeAndDate
 {
     /* 
        Return the current system CPU time in s 
+       Must be called every 2^35/1000000 s (~=<35min) or more frequently to 
+       ensure proper time keeping 
     */
     //%
     uint32_t cpuTimeInSeconds() {
@@ -49,18 +51,35 @@ namespace timeAndDate
         uint32_t currentUs = us_ticker_read();
 
         uint32_t newUs = currentUs - lastUs;
-        if(newUs>4294000000u) {
+        if(!(newUs & 0x80000000)) {
+            // Only add if it's positive / valid...
+            totalUs += newUs; 
+        }
 #ifdef DEBUG
+        else {
             uBit.serial.send("Oops\nCurrent=");
             uBit.serial.send((int)currentUs);
             uBit.serial.send("\nlast=");
             uBit.serial.send((int)lastUs);
             uBit.serial.send("\n");
-#endif
-        } else {
-            // Only add if it's positive...
-            totalUs += newUs;
         }
+#endif
+
+
+//         if(newUs>4294000000u) {
+// // This can probably be simplified to just checking the 
+// // high order bit:  newUs & 0x80000000
+// #ifdef DEBUG
+//             uBit.serial.send("Oops\nCurrent=");
+//             uBit.serial.send((int)currentUs);
+//             uBit.serial.send("\nlast=");
+//             uBit.serial.send((int)lastUs);
+//             uBit.serial.send("\n");
+// #endif
+//         } else {
+//             // Only add if it's positive...
+//             totalUs += newUs;
+//         }
         lastUs = currentUs;
 
         return totalUs / 1000000;
@@ -89,6 +108,11 @@ last=82640895
 
 currentUs - lastUs => -64411
 
-One Hypothesis:  This is splitting a read of a 4 byte value before a roll-over??? If so, this "filter" may actually avoid the errors.???
+One Hypothesis:  This is splitting a read of a 4 byte value before a roll-over???
+I.e. non-atomic read that leads to inconsistent result. That would 
+explain why it's always off in the ballpark of 65k (~2^16)
+ If so, this "filter" may actually avoid the errors.
 
+Hmmm: https://github.com/ARMmbed/mbed-os/issues/4026
+Seems somewhat likely (need to review further)
 */
