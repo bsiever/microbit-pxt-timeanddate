@@ -9,9 +9,6 @@
 
 #include "pxt.h"
 
-#include "Microbit.h"
-extern Microbit uBit;
-
 using namespace pxt;
 
 #define DEBUG 1
@@ -53,16 +50,16 @@ namespace timeAndDate
         uint32_t currentUs = us_ticker_read();
 
         uint32_t newUs = currentUs - lastUs;
-        lastUs = currentUs;
-        if(newUs>4294000000) {
+        if(newUs>4294000000u) {
 #ifdef DEBUG
-            loopUntilSent("Oops\nCurrent=");
-            loopUntilSent(currentUs);
-            loopUntilSent("\nlast=");
-            loopUntilSent(lastUs);
-            loopUntilSent("\n");
+            uBit.serial.send("Oops\nCurrent=");
+            uBit.serial.send(currentUs);
+            uBit.serial.send("\nlast=");
+            uBit.serial.send(lastUs);
+            uBit.serial.send("\n");
 #endif
         }
+        lastUs = currentUs;
         // An overflow occurred
         // if(currentUs<0x7FFFFFFF && lastUs>0x7FFFFFFF) {
         //     newUs = 0xFFFFFFFF - lastUs + 1 + currentUs;
