@@ -11,6 +11,33 @@
 
 using namespace pxt;
 
+#define DEBUG 1
+
+#ifdef DEBUG
+    /**
+     * 
+     */
+// https://www.forward.com.au/pfod/microbit/gettingStarted.html
+    void loopUntilSent(ManagedString str) {
+    int rtn = uBit.serial.send(str);
+    while(rtn == MICROBIT_SERIAL_IN_USE) {
+       uBit.sleep(0); // let other tasks run
+       rtn = uBit.serial.send(str); 
+    }
+}
+    void loopUntilSent(int str) {
+    int rtn = uBit.serial.send(str);
+    while(rtn == MICROBIT_SERIAL_IN_USE) {
+       uBit.sleep(0); // let other tasks run
+       rtn = uBit.serial.send(str); 
+    }
+}
+
+#endif 
+
+
+
+
 namespace timeAndDate
 {
     /* 
@@ -25,6 +52,15 @@ namespace timeAndDate
         uint32_t newUs = currentUs - lastUs;
         totalUs += newUs;
         lastUs = currentUs;
+        if(newUs>4294000000) {
+#ifdef DEBUG
+            loopUntilSent("Oops\nCurrent=");
+            loopUntilSent(currentUs);
+            loopUntilSent("\nlast=");
+            loopUntilSent(lastUs);
+            loopUntilSent("\n");
+#endif
+        }
         // An overflow occurred
         // if(currentUs<0x7FFFFFFF && lastUs>0x7FFFFFFF) {
         //     newUs = 0xFFFFFFFF - lastUs + 1 + currentUs;
