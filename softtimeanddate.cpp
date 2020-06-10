@@ -11,7 +11,7 @@
 
 using namespace pxt;
 
-#define DEBUG 1
+//#define DEBUG 1
 
 #ifdef DEBUG
     /**
@@ -25,14 +25,13 @@ using namespace pxt;
        rtn = uBit.serial.send(str); 
     }
 }
-    void loopUntilSent(int str) {
+void loopUntilSent(int str) {
     int rtn = uBit.serial.send(str);
     while(rtn == MICROBIT_SERIAL_IN_USE) {
        uBit.sleep(0); // let other tasks run
        rtn = uBit.serial.send(str); 
     }
 }
-
 #endif 
 
 
@@ -53,27 +52,43 @@ namespace timeAndDate
         if(newUs>4294000000u) {
 #ifdef DEBUG
             uBit.serial.send("Oops\nCurrent=");
-            uBit.serial.send(currentUs);
+            uBit.serial.send((int)currentUs);
             uBit.serial.send("\nlast=");
-            uBit.serial.send(lastUs);
+            uBit.serial.send((int)lastUs);
             uBit.serial.send("\n");
 #endif
+        } else {
+            // Only add if it's positive...
+            totalUs += newUs;
         }
         lastUs = currentUs;
-        // An overflow occurred
-        // if(currentUs<0x7FFFFFFF && lastUs>0x7FFFFFFF) {
-        //     newUs = 0xFFFFFFFF - lastUs + 1 + currentUs;
-        // } else {
-        //     newUs = currentUs - lastUs;
-        // }
-        //  newUs = currentUs - lastUs;
-        // // If an error occurred skip this update.  (Should we update lastUs in either case???)
-        // // if(newUs < 100*1000000) {
-        //      totalUs += newUs;
-        //      lastUs = currentUs;
-        // // }
-        // // Convert uS into seconds
-        // // return totalUs / 1000000;
+
         return totalUs / 1000000;
     }
 } // namespace timeAndDate
+
+
+/*
+Example Failure Cases for further review:
+
+
+0000-01-01 00:01.07
+Oops
+Current=67175591
+last=67239935
+0000-01-01 00:01.08
+
+currentUs - lastUs => -64344
+
+
+0000-01-01 00:01.22
+Oops
+Current=82576484
+last=82640895
+0000-01-01 00:01.23
+
+currentUs - lastUs => -64411
+
+One Hypothesis:  This is splitting a read of a 4 byte value before a roll-over??? If so, this "filter" may actually avoid the errors.???
+
+*/
