@@ -281,7 +281,7 @@ namespace timeAndDate {
      * @param minute the minute (0-59)
      * @param second the second (0-59)
      */
-    //% block="set time from 24-hour time |  %hour | : %minute | . %second"
+    //% block="set time from 24-hour time |  $hour | : $minute | . $second"
     //% hour.min=0 hour.max=23 hour.defl=13
     //% minute.min=0 minute.max=59 minute.defl=30
     //% second.min=0 second.max=59 second.defl=0
@@ -301,7 +301,7 @@ namespace timeAndDate {
      * @param day the day of the month 1-31
      * @param the year 2020-2050
      */
-    //% block="set date to | Month %month | / Day %day | / Year %year"
+    //% block="set date to | Month $month | / Day $day | / Year $year"
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
     //% year.min=2020 year.max=2050 year.defl=2020
@@ -323,7 +323,7 @@ namespace timeAndDate {
      * @param second the second (0-59)
      * @param ampm morning or night
      */
-    //% block="set time to |  %hour | : %minute | . %second | %ampm"
+    //% block="set time to |  $hour | : $minute | . $second | $ampm"
     //% hour.min=1 hour.max=12 hour.defl=11
     //% minute.min=0 minute.max=59 minute.defl=30
     //% second.min=0 second.max=59 second.defl=0
@@ -344,7 +344,7 @@ namespace timeAndDate {
      * @param amount the amount of time to add (or subtract if negative).  To avoid roll-over use withT ime and set time in with "+1"
      * @param unit the unit of time
      */
-    //% block="advance time/date by | %amount | %unit "
+    //% block="advance time/date by | $amount | $unit "
     export function advanceBy(amount: number, unit: TimeUnit) {
         const units = [0, 1, 60 * 1, 60 * 60 * 1, 24 * 60 * 60 * 1]
         timeToSetpoint += amount * units[unit]
@@ -456,12 +456,11 @@ namespace timeAndDate {
         let sSinceStartOfYear = timeToSetpoint + deltaTime
         return sSinceStartOfYear
     }
-    // TODO: Remove
 
     /**
-     * Seconds since start of CPU  
+     * Seconds since start of micro:bit  
      */
-    //% block="seconds since CPU start" advanced=true
+    //% block="seconds since microbit start" advanced=true
     export function secondsSinceReset(): number {
         return cpuTimeInSeconds()
     }
