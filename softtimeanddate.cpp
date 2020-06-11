@@ -12,25 +12,7 @@
 using namespace pxt;
 
 // Enable debugging or not:
-//#define DEBUG 1
-
-#ifdef DEBUG
-// This debugging print is from: https://www.forward.com.au/pfod/microbit/gettingStarted.html
-    void loopUntilSent(ManagedString str) {
-    int rtn = uBit.serial.send(str);
-    while(rtn == MICROBIT_SERIAL_IN_USE) {
-       uBit.sleep(0); // let other tasks run
-       rtn = uBit.serial.send(str); 
-    }
-}
-void loopUntilSent(int str) {
-    int rtn = uBit.serial.send(str);
-    while(rtn == MICROBIT_SERIAL_IN_USE) {
-       uBit.sleep(0); // let other tasks run
-       rtn = uBit.serial.send(str); 
-    }
-}
-#endif 
+#define DEBUG 1
 
 
 namespace timeAndDate
@@ -44,29 +26,48 @@ namespace timeAndDate
     uint32_t cpuTimeInSeconds() {
         static uint32_t lastUs = 0;
         static uint64_t totalUs = 0;
-        uint32_t currentUs = us_ticker_read();
+#ifdef DEBUG
+        uint32_t retries = 0;
+#endif
+        // Continue to get ticker values until they are valid
+        while(true) {
+            uint32_t currentUs = us_ticker_read();
 
-        uint32_t newUs = currentUs - lastUs;
-        // Note: There appears to be a race-condition.  I think it's related to atomic access to the ticker value 
-        // and occasionally results in ticker values decreasing (Perhaps related to https://github.com/ARMmbed/mbed-os/issues/4026)
-        // Following "normal" rollover of the ticker counter values also decrease, so we can't simply check if currentUs>lastUs (it won't be on rollover).
-        // Instead we check the magnitude of the result.  If it represents a large number then we discard it and don't update the total count. 
-        // The update period needs to ensure that there will be multiple attempts again before a high-magnitude value would be valid.
-        // See notes / comment at the bottom of this file
-        // Prior attempt:
-        //  if(newUs<4294000000u) {
-        if(!(newUs & 0x80000000)) {
-            // Only add if it's positive / valid...
-            totalUs += newUs; 
-            lastUs = currentUs;
+            uint32_t newUs = currentUs - lastUs;
+            // Note: There appears to be a race-condition.  I think it's related to atomic access to the ticker value 
+            // and occasionally results in ticker values decreasing (Perhaps related to https://github.com/ARMmbed/mbed-os/issues/4026)
+            // Following "normal" rollover of the ticker counter values also decrease, so we can't simply check if currentUs>lastUs (it won't be on rollover).
+            // Instead we check the magnitude of the result.  If it represents a large number then we discard it and don't update the total count. 
+            // The update period needs to ensure that there will be multiple attempts again before a high-magnitude value would be valid.
+            // See notes / comment at the bottom of this file
+            // Prior attempt:
+            //  if(newUs<4294000000u) {
+            if(!(newUs & 0x80000000)) {
+                // Only add if it's positive / valid...
+                totalUs += newUs; 
+                lastUs = currentUs;
+                break;  // Leave the loop
+            }
+#ifdef DEBUG
+            else {
+                retries++;
+                // TODO: Should there be a fiber_sleep(1) here?
+                // I'm assuming that a nearly immediate re-try will not
+                // be a problem...but not sure. 
+//                fiber_sleep(1);
+                // uBit.serial.send("Error\ncurrentUs=");
+                // uBit.serial.send((int)currentUs);
+                // uBit.serial.send("\nlastUs=");
+                // uBit.serial.send((int)lastUs);
+                // uBit.serial.send("\n");
+            }
+#endif
+
         }
 #ifdef DEBUG
-        else {
-            uBit.serial.send("Error\ncurrentUs=");
-            uBit.serial.send((int)currentUs);
-            uBit.serial.send("\nlastUs=");
-            uBit.serial.send((int)lastUs);
-            uBit.serial.send("\n");
+        if(retries!=0) {
+            uBit.serial.send("Retries=");
+            uBit.serial.send((int)retries);
         }
 #endif
 
@@ -110,4 +111,35 @@ value of the first read, leading to an inconsistent result.  The difference in v
 rather than a modest positive value. 
 
 This may be related to: https://github.com/ARMmbed/mbed-os/issues/4026
+
+
+
+
+Consider:
+
+Sequence of 2-part reads
+95  50
+96  00    <- Invalid read.  Read as 95 00
+96  50
+97  00
+
+
+last = 95 50
+current = 95 00     <- Error detected;  No update to overall timer
+                       (should have added 50)
+
+last = 95 00  
+current = 96 50     <-  Valid --- Adds 150   (should be up a net of 100, not 150)
+
+
+If instead
+last = 95 50 
+current = 96 50    <- Adds 100 (correct)
+
+
+
+
+
+
+
 */
