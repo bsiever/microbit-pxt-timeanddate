@@ -12,7 +12,7 @@
 using namespace pxt;
 
 // Enable debugging or not:
-#define DEBUG 1
+// #define DEBUG 1
 
 
 namespace timeAndDate
@@ -54,7 +54,7 @@ namespace timeAndDate
                 // TODO: Should there be a fiber_sleep(1) here?
                 // I'm assuming that a nearly immediate re-try will not
                 // be a problem...but not sure. 
-//                fiber_sleep(1);
+               fiber_sleep(1);
                 // uBit.serial.send("Error\ncurrentUs=");
                 // uBit.serial.send((int)currentUs);
                 // uBit.serial.send("\nlastUs=");
