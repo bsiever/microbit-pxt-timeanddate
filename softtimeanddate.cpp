@@ -12,7 +12,7 @@
 using namespace pxt;
 
 // Enable debugging or not:
-#define DEBUG 1
+// #define DEBUG 1
 
 
 namespace timeAndDate
@@ -53,8 +53,8 @@ namespace timeAndDate
                 retries++;
                 // TODO: Should there be a fiber_sleep(1) here?
                 // I'm assuming that a nearly immediate re-try will not
-                // be a problem...but not sure. 
-//                fiber_sleep(1);
+                // be a problem...but not sure.   Yup...That was wrong. Trying the fiber thingy. 
+                fiber_sleep(0);
                 // uBit.serial.send("Error\ncurrentUs=");
                 // uBit.serial.send((int)currentUs);
                 // uBit.serial.send("\nlastUs=");
@@ -138,8 +138,15 @@ current = 96 50    <- Adds 100 (correct)
 
 
 
+O.k....The 24-bit counter will overflow every 512s, so checks need to be done at least that often.
+Reading the counter is done in: https://github.com/ARMmbed/mbed-hal-nrf51822-mcu/blob/master/source/us_ticker.c 's rtc1_getCounter64() 
+(it was called by us_ticker_read()).  That clearly has a race or atomicity error. It checks overflow then gets the count (while the counter is 
+still running!!!!)
 
+So, errors can happen every 512s (8.5min).  They are due to a small atomicity problem.  The error will occur in the lower 24-bits returned from rtc1_getCounter64()
+being inconsistent (the total value won't appear to increase monotonically due to the non-atomic access at rollover.  The Carry won't be added
+to the upper bits yet while the counter will have rolled over)
 
-
-
+The problem would always exhibit as non-monotonic counts (a sample being lower than its predecessor), which is being detected / filtered out. 
+It's taking ~7ms to resolve (I think based on counts when fiber_sleep(1) is used). Which is a weird number.  
 */

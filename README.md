@@ -25,7 +25,7 @@ Using a reasonable "startup value" as described in
 
 Synchronizing the time at startup is the easiest approach, but it requires re-programming the micro:bit everytime the time needs to be set (like whenever it is restarted).  The `startup` will include blocks to set the time, like:
 
-```blocks
+```block
 timeAndDate.setDate(1, 20, 2020)
 timeAndDate.set24HourTime(13, 30, 0)
 ```
@@ -157,6 +157,7 @@ is used.  It access all parts of the day/time at once and provides variables con
 timeAndDate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
 })
 ```
+The weekday indicates the day of the week, where 0 is Monday, 1 is Tuesday, etc.
 
 ### Background
 
@@ -337,6 +338,7 @@ basic.forever(function () {
 
 ## Misc Links & References
 
+Algorithms used here and Unit tests for them: https://github.com/bsiever/software-based-RTC-algorithm
 FontAwesome Icon: https://iconify.design/icon-sets/fa/ 
 SparkFun's Guide: https://learn.sparkfun.com/tutorials/how-to-create-a-makecode-package-for-microbit/all
 
