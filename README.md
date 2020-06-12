@@ -25,7 +25,7 @@ Using a reasonable "startup value" as described in
 
 Synchronizing the time at startup is the easiest approach, but it requires re-programming the micro:bit everytime the time needs to be set (like whenever it is restarted).  The `startup` will include blocks to set the time, like:
 
-```block
+```blocks
 timeanddate.setDate(1, 20, 2020)
 timeanddate.set24HourTime(13, 30, 0)
 ```
@@ -48,7 +48,7 @@ This is the approach used by mechanical clocks, where time is
   
 For example, the time could be set by advancing or backing it up one minute at a time using the A and B buttons:
 
-```block
+```blocks
 input.onButtonPressed(Button.A, function () {
     timeanddate.advanceBy(1, timeanddate.TimeUnit.Minutes)
 })
@@ -87,7 +87,7 @@ This approach should be done on each digits of the time (minutes, hours, and if 
 
 Here's an example that focuses on just the minutes:
 
-```block
+```blocks
 input.onButtonPressed(Button.B, function () {
     timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
         timeanddate.set24HourTime(hour, minute + -1, second)
@@ -102,7 +102,7 @@ input.onButtonPressed(Button.A, function () {
 ```
 
 Since the time setting blocks use modular arithmetic, adding and subtracting to the prior value will 
-"roll over" in the expected way (and will not impact the hours, like the adding approach would)
+"rollover" in the expected way (and will not impact the hours, like the adding approach would)
 
 Note that this may not work correctly when the total time is before the year specified in ``setDate``.  
 That is, if ``setDate`` specifies 2024, then negative values should not "roll back" before Jan 1, 2024. 
@@ -111,23 +111,26 @@ That is, if ``setDate`` specifies 2024, then negative values should not "roll ba
 
 ## Time 
 
-``[let txt = "text"]``
+TODO: Fix these so they all just show the reporter block, not the let/display.
 
-The ``[timeanddate.time]`` block provides the current time in the given format. 
+
+The ``[let x = timeanddate.time(timeanddate.TimeFormat.HMM)]``
+block provides the current time in the given format. 
 
 If no time has been set, the time will be based on when the micro:bit started (was reset).  By default time 
-starts at 00:00.00 on 0000-00-00.
+starts at 00:00.00 on 0000-01-01.
 
 ## Date 
 
-The ``[timeanddate.date]`` block provides the current date in the specified format. 
+The ``[basic.showString(timeanddate.date(timeanddate.DateFormat.MD))]`` 
+block provides the current date in the specified format. 
 
 If no date is set, it will start at 0000-01-01 when the micro:bit starts. 
 
 
 # Time stamps
 
-Often a "time stamp" is needed to record events. The ``date and time stamp`` block should be used.  It provides the date and time in the format:
+Often a "time stamp" is needed to record events. The ``[basic.showString(timeanddate.dateTime())]`` block should be used.  It provides the date and time in the format:
  YYYY-MM-DD HH:MM.SS.  This format is well suited to sorting and use in spreadsheets.  It also ensures that the date and time are retrieved at the same time 
  (accessing them separately may lead to a date after the time if the the time is checked at almost exactly the end of
  the day).
@@ -206,9 +209,9 @@ Since there may be a ~1s error in your reaction time, it's probably best to try 
 
 #### Improving Accuracy
 If you measure the accuracy and it's consistent/predictable, you may be able to use the
- ``[timeanddate.advanceBy]`` and ``[timeanddate.onHourChanged]`` blocks to periodically adjust the accuracy.  
+ ``[timeanddate.advanceBy()]`` and ``[timeanddate.onHourChanged()]`` blocks to periodically adjust the accuracy.  
  
- Be careful setting time backward while using ``[timeanddate.onHourChanged]``! It's possible to get stuck in a "loop" 
+ Be careful setting time backward while using ``[timeanddate.onHourChanged()]``! It's possible to get stuck in a "loop" 
  that continually resets the time. You may need to use a variable to identify which "hour" was the last one to be adjusted. 
 
 ### ~
@@ -279,7 +282,10 @@ to be changed.)
 3. Create a clock *without*  these blocks!  Hints: You'll need a few counter variables, a forever loop, and the ability to "wait".
 
 
-# Binary clock 
+# Bonus: A Binary clock 
+
+Here's a simple clock that will show time in binary code.  Each column represents a digit of the current 12-hour time. 
+The bottom most LED in each column is the 1's digit, the second from the bottom is the 2's, etc. 
 
 ```blocks
 function binaryDisplayOf (num: number, col: number) {

@@ -152,10 +152,10 @@ namespace timeanddate {
     function isLeapYear(y: Year): boolean {
         // The /400 and /100 rules don't come into play until 2400 and 2300 or 0100.  We can ignore them here
         // Here's the code for accurate handling of leap years:
-        // return (y % 400 == 0 || (y % 100 != 0 && y % 4 == 0))
+        return (y % 400 == 0 || (y % 100 != 0 && y % 4 == 0))
 
         // Simplified case for 2020-2099.
-        return y % 4 == 0
+        // return y % 4 == 0
     }
 
     function dateToDayOfYear(m: Month, d: Day, y: Year) {
