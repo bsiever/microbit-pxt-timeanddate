@@ -7,8 +7,8 @@
     },
     "files": [
         "README.md",
-        "main.ts",
-        "softtimeanddate.cpp",
+        "timeanddate.ts",
+        "timeanddate.cpp",
         "shims.d.ts",
         "enums.d.ts"
     ],

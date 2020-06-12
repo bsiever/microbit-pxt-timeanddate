@@ -347,6 +347,6 @@ FontAwesome Icon: https://iconify.design/icon-sets/fa/
 SparkFun's Guide: https://learn.sparkfun.com/tutorials/how-to-create-a-makecode-package-for-microbit/all
 
 ```package
-timeanddate=github:bsiever/microbit-pxt-softclock
+timeanddate=github:bsiever/microbit-pxt-timeanddate
 ```
 <script src="https://makecode.com/gh-pages-embed.js"></script><script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>

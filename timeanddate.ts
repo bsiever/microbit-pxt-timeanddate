@@ -230,7 +230,7 @@ namespace timeanddate {
         return { month: ddmm.month, day: ddmm.day, year: y, hour: hoursFromStartOfDay, minute: minutesFromStartOfHour, second: secondsSinceStartOfMinute, dayOfYear: daysFromStartOfYear }
     }
 
-    //% shim=time::cpuTimeInSeconds
+    //% shim=timeanddate::cpuTimeInSeconds
     function cpuTimeInSeconds(): uint32 {
         return Math.idiv(input.runningTime(), 1000)
     }
