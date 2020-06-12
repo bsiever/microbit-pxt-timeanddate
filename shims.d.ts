@@ -10,7 +10,7 @@
      * Distributed as-is; no warranty is given.
      */
 
-declare namespace timeAndDate {
+declare namespace timeanddate {
 }
 
 // Auto-generated. Do not edit. Really.

@@ -5,8 +5,9 @@
  *
  * @author Bill Siever
  */
+//% block=" Time and Date"
 //% color="#AA278D"  icon="\uf017"
-namespace timeAndDate {
+namespace timeanddate {
 
     /* 
         This ensures that "time" is checked periodically and event handlers are called.  
@@ -229,7 +230,7 @@ namespace timeAndDate {
         return { month: ddmm.month, day: ddmm.day, year: y, hour: hoursFromStartOfDay, minute: minutesFromStartOfHour, second: secondsSinceStartOfMinute, dayOfYear: daysFromStartOfYear }
     }
 
-    //% shim=timeAndDate::cpuTimeInSeconds
+    //% shim=time::cpuTimeInSeconds
     function cpuTimeInSeconds(): uint32 {
         return Math.idiv(input.runningTime(), 1000)
     }

@@ -15,7 +15,7 @@ using namespace pxt;
 // #define DEBUG 1
 
 
-namespace timeAndDate
+namespace timeanddate
 {
     /* 
        Return the current system CPU time in s 
@@ -73,7 +73,7 @@ namespace timeAndDate
 
         return totalUs / 1000000;
     }
-} // namespace timeAndDate
+} // namespace timeanddate
 
 
 

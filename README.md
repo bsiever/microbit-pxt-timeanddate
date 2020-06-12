@@ -26,8 +26,8 @@ Using a reasonable "startup value" as described in
 Synchronizing the time at startup is the easiest approach, but it requires re-programming the micro:bit everytime the time needs to be set (like whenever it is restarted).  The `startup` will include blocks to set the time, like:
 
 ```block
-timeAndDate.setDate(1, 20, 2020)
-timeAndDate.set24HourTime(13, 30, 0)
+timeanddate.setDate(1, 20, 2020)
+timeanddate.set24HourTime(13, 30, 0)
 ```
 Setting the date can be left out if there's no need to keep track of the date, like if you want a 
 wearable that won't display the date. 
@@ -50,11 +50,11 @@ For example, the time could be set by advancing or backing it up one minute at a
 
 ```block
 input.onButtonPressed(Button.A, function () {
-    timeAndDate.advanceBy(1, timeAndDate.TimeUnit.Minutes)
+    timeanddate.advanceBy(1, timeanddate.TimeUnit.Minutes)
 })
 
 input.onButtonPressed(Button.B, function () {
-    timeAndDate.advanceBy(-1, timeAndDate.TimeUnit.Minutes)
+    timeanddate.advanceBy(-1, timeanddate.TimeUnit.Minutes)
 })
 ```
 
@@ -63,21 +63,21 @@ the correct hour is shown.  Then hold "B" until the message says "min:". Then ho
 
 ```blocks
 input.onButtonPressed(Button.A, function () {
-    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMM))
+    basic.showString(timeanddate.time(timeanddate.TimeFormat.HMM))
 })
 basic.showString("hr:")
 while (!(input.buttonIsPressed(Button.B))) {
     if (input.buttonIsPressed(Button.A)) {
-        timeAndDate.advanceBy(1, timeAndDate.TimeUnit.Hours)
+        timeanddate.advanceBy(1, timeanddate.TimeUnit.Hours)
     }
-    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMM))
+    basic.showString(timeanddate.time(timeanddate.TimeFormat.HMM))
 }
 basic.showString("min:")
 while (!(input.buttonIsPressed(Button.B))) {
     if (input.buttonIsPressed(Button.A)) {
-        timeAndDate.advanceBy(1, timeAndDate.TimeUnit.Minutes)
+        timeanddate.advanceBy(1, timeanddate.TimeUnit.Minutes)
     }
-    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMM))
+    basic.showString(timeanddate.time(timeanddate.TimeFormat.HMM))
 }
 ```
 
@@ -89,14 +89,14 @@ Here's an example that focuses on just the minutes:
 
 ```block
 input.onButtonPressed(Button.B, function () {
-    timeAndDate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
-        timeAndDate.set24HourTime(hour, minute + -1, second)
+    timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+        timeanddate.set24HourTime(hour, minute + -1, second)
     })
 })
 
 input.onButtonPressed(Button.A, function () {
-    timeAndDate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
-        timeAndDate.set24HourTime(hour, minute + 1, second)
+    timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+        timeanddate.set24HourTime(hour, minute + 1, second)
     })
 })
 ```
@@ -111,14 +111,16 @@ That is, if ``setDate`` specifies 2024, then negative values should not "roll ba
 
 ## Time 
 
-The ``[timeAndDate.time]`` block provides the current time in the given format. 
+``[let txt = "text"]``
+
+The ``[timeanddate.time]`` block provides the current time in the given format. 
 
 If no time has been set, the time will be based on when the micro:bit started (was reset).  By default time 
 starts at 00:00.00 on 0000-00-00.
 
 ## Date 
 
-The ``[timeAndDate.date]`` block provides the current date in the specified format. 
+The ``[timeanddate.date]`` block provides the current date in the specified format. 
 
 If no date is set, it will start at 0000-01-01 when the micro:bit starts. 
 
@@ -154,7 +156,7 @@ Accessing the numeric values of time/date can be useful for things like alarm cl
 is used.  It access all parts of the day/time at once and provides variables containing them. 
 
 ```sig
-timeAndDate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
 })
 ```
 The weekday indicates the day of the week, where 0 is Monday, 1 is Tuesday, etc.
@@ -173,13 +175,13 @@ Use the following program, which will start the time at 00:00.00 (just like a st
 
 ```blocks
 input.onButtonPressed(Button.A, function () {
-    basic.showString(timeAndDate.dateTime())
+    basic.showString(timeanddate.dateTime())
 })
 input.onButtonPressed(Button.B, function () {
     basic.clearScreen()
 })
 basic.showIcon(IconNames.Heart)
-timeAndDate.set24HourTime(0, 0, 0)
+timeanddate.set24HourTime(0, 0, 0)
 ```
 Use a stopwatch or stopwatch app on a computer/phone. To start measurement:
 1. To estimate the accuracy of the micro:bit you'll need to compare it's estimate of time to the stopwatch for a few hours (or even days). Be sure that it's set up someplace where it will have power continuously, either via battery or a USB cable,  for a long time (hours or days). Some computers will suspend power to USB devices if the computer isn't in use for a while, so you may want to use a USB  charger.
@@ -204,9 +206,9 @@ Since there may be a ~1s error in your reaction time, it's probably best to try 
 
 #### Improving Accuracy
 If you measure the accuracy and it's consistent/predictable, you may be able to use the
- ``[timeAndDate.advanceBy]`` and ``[timeAndDate.onHourChanged]`` blocks to periodically adjust the accuracy.  
+ ``[timeanddate.advanceBy]`` and ``[timeanddate.onHourChanged]`` blocks to periodically adjust the accuracy.  
  
- Be careful setting time backward while using ``[timeAndDate.onHourChanged]``! It's possible to get stuck in a "loop" 
+ Be careful setting time backward while using ``[timeanddate.onHourChanged]``! It's possible to get stuck in a "loop" 
  that continually resets the time. You may need to use a variable to identify which "hour" was the last one to be adjusted. 
 
 ### ~
@@ -222,30 +224,30 @@ There's an extra block that displays the time after pressing "A" to check your w
 
 ```blocks
 input.onButtonPressed(Button.A, function () {
-    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMMAMPM))
+    basic.showString(timeanddate.time(timeanddate.TimeFormat.HMMAMPM))
 })
-timeAndDate.setTime(11, 30, 0, timeAndDate.MornNight.AM)
+timeanddate.setTime(11, 30, 0, timeanddate.MornNight.AM)
 basic.showString("Set Hour")
 while (!(input.buttonIsPressed(Button.AB))) {
-    timeAndDate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+    timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
         if (input.buttonIsPressed(Button.A)) {
-            timeAndDate.set24HourTime(hour + 1, minute, 0)
+            timeanddate.set24HourTime(hour + 1, minute, 0)
         } else if (input.buttonIsPressed(Button.B)) {
-            timeAndDate.set24HourTime(hour - 1, minute, 0)
+            timeanddate.set24HourTime(hour - 1, minute, 0)
         }
     })
-    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMMAMPM))
+    basic.showString(timeanddate.time(timeanddate.TimeFormat.HMMAMPM))
 }
 basic.showString("Set Min")
 while (!(input.buttonIsPressed(Button.AB))) {
-    timeAndDate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+    timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
         if (input.buttonIsPressed(Button.A)) {
-            timeAndDate.set24HourTime(hour, minute + 1, 0)
+            timeanddate.set24HourTime(hour, minute + 1, 0)
         } else if (input.buttonIsPressed(Button.B)) {
-            timeAndDate.set24HourTime(hour, minute - 1, 0)
+            timeanddate.set24HourTime(hour, minute - 1, 0)
         }
     })
-    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMMAMPM))
+    basic.showString(timeanddate.time(timeanddate.TimeFormat.HMMAMPM))
 }
 ```
 
@@ -255,12 +257,12 @@ By use of setting time to 0:0.0 this can be used as a simple stopwatch.  For exa
 
 ```blocks
 input.onButtonPressed(Button.A, function () {
-    timeAndDate.set24HourTime(0, 0, 0)
+    timeanddate.set24HourTime(0, 0, 0)
 })
 input.onButtonPressed(Button.B, function () {
-    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HHMMSS24hr))
+    basic.showString(timeanddate.time(timeanddate.TimeFormat.HHMMSS24hr))
 })
-timeAndDate.set24HourTime(0, 0, 0)
+timeanddate.set24HourTime(0, 0, 0)
 ```
 
 "A" starts counting and "B" shows the time elapsed since "A" was pressed (or the start)
@@ -274,6 +276,8 @@ to be changed.)
 2. Create an alarm clock!
 3. Add a snooze feature to your alarm clock!
 3. Create an adjustable alarm clork that allows the alarm time to be changed without reprogramming. 
+3. Create a clock *without*  these blocks!  Hints: You'll need a few counter variables, a forever loop, and the ability to "wait".
+
 
 # Binary clock 
 
@@ -288,31 +292,31 @@ function binaryDisplayOf (num: number, col: number) {
     }
 }
 input.onButtonPressed(Button.B, function () {
-    timeAndDate.advanceBy(1, timeAndDate.TimeUnit.Minutes)
+    timeanddate.advanceBy(1, timeanddate.TimeUnit.Minutes)
 })
 input.onButtonPressed(Button.A, function () {
-    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMM))
+    basic.showString(timeanddate.time(timeanddate.TimeFormat.HMM))
 })
 input.onButtonPressed(Button.AB, function () {
-    timeAndDate.advanceBy(15, timeAndDate.TimeUnit.Minutes)
+    timeanddate.advanceBy(15, timeanddate.TimeUnit.Minutes)
 })
 basic.showString("hr:")
 while (!(input.buttonIsPressed(Button.B))) {
     if (input.buttonIsPressed(Button.A)) {
-        timeAndDate.advanceBy(1, timeAndDate.TimeUnit.Hours)
+        timeanddate.advanceBy(1, timeanddate.TimeUnit.Hours)
     }
-    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMM))
+    basic.showString(timeanddate.time(timeanddate.TimeFormat.HMM))
 }
 basic.showString("min:")
 while (!(input.buttonIsPressed(Button.B))) {
     if (input.buttonIsPressed(Button.A)) {
-        timeAndDate.advanceBy(1, timeAndDate.TimeUnit.Minutes)
+        timeanddate.advanceBy(1, timeanddate.TimeUnit.Minutes)
     }
-    basic.showString(timeAndDate.time(timeAndDate.TimeFormat.HMM))
+    basic.showString(timeanddate.time(timeanddate.TimeFormat.HMM))
 }
 let blink = false
 basic.forever(function () {
-    timeAndDate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+    timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
         hour = 0 % 12
         if (hour == 0) {
             hour = 12
@@ -342,4 +346,7 @@ Algorithms used here and Unit tests for them: https://github.com/bsiever/softwar
 FontAwesome Icon: https://iconify.design/icon-sets/fa/ 
 SparkFun's Guide: https://learn.sparkfun.com/tutorials/how-to-create-a-makecode-package-for-microbit/all
 
+```package
+timeanddate=github:bsiever/microbit-pxt-softclock
+```
 <script src="https://makecode.com/gh-pages-embed.js"></script><script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
