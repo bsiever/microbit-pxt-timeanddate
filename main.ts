@@ -243,21 +243,12 @@ namespace timeAndDate {
         return value
     }
 
-    function dayOfWeek(m: Month, d: Day, y: Year): Weekday {
-        // f = k + [(13 * m - 1) / 5] + D + [D / 4] + [C / 4] - 2 * C.
-        // Zeller's Rule from http://mathforum.org/dr.math/faq/faq.calendar.html
-
-        let D = y % 100
-        if (m < 3) {
-            m += 10
-            D -= 1
-        } else {
-            m -= 2
-        }
-        let C = Math.idiv(y, 100)
-        // Use integer division
-        let f = d + Math.floor((13 * m - 1) / 5) + D + Math.floor(D / 4) + Math.floor(C / 4) - 2 * C
-        return f % 7
+    function dayOfWeek(doy: DayOfYear, y: Year): Weekday {
+        // Gauss's Algorithm for Jan 1: https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week
+        // R(1+5R(A-1,4)+4R(A-1,100)+6R(A-1,400),7)    
+        let jan1 = ((1+5*( (y-1) % 4)+4*( (y-1) % 100)+6* ( (y-1) % 400)) % 7) 
+        jan1 += 6  // Shift range:  Gauss used 0=Sunday, we'll use 0=Monday
+        return ( (doy-1) + jan1 ) % 7
     }
 
     // 24-hour time:  hh:mm.ss
@@ -362,7 +353,7 @@ namespace timeAndDate {
     export function numericTime(handler: (hour: Hour, minute: Minute, second: Second, weekday: Weekday, day: Day, month: Month, year: Year, dayOfYear: DayOfYear) => void) {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
-        handler(t.hour, t.minute, t.second, dayOfWeek(t.month, t.day, t.year), t.day, t.month, t.year, t.dayOfYear)
+        handler(t.hour, t.minute, t.second, dayOfWeek(t.dayOfYear, t.year), t.day, t.month, t.year, t.dayOfYear)
     }
 
     /**
