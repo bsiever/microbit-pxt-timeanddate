@@ -10,7 +10,7 @@ you can use the stopwatch experiment described [below](#measuring-accuracy-and-c
   - In tests at room temperature it is generally accurate to within 1 second per day
 - The time needs to be set each time the micro:bit is reprogrammed or restarts.  
 
-## Setting the Time 
+## Setting the Time
 
 There are three common approaches to setting the time:
 
