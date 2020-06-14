@@ -211,7 +211,7 @@ namespace timeanddate {
             leap = isLeapYear(y)
         }
 
-        // sSinceStartOfYear and leap are now for "y", not "year".  Don't yes "year"! Use "y"
+        // sSinceStartOfYear and leap are now for "y", not "year".  Don't use "year"! Use "y"
         // Find elapsed days
         const daysFromStartOfYear = Math.idiv(sSinceStartOfYear, (24 * 60 * 60)) + 1  // +1 offset for 1/1 being day 1
         const secondsSinceStartOfDay = sSinceStartOfYear % (24 * 60 * 60)
@@ -292,7 +292,7 @@ namespace timeanddate {
      * @param day the day of the month 1-31
      * @param the year 2020-2050
      */
-    //% block="set date to | Month $month | / Day $day | / Year $year"
+    //% block="set date to | month $month | / day $day | / year $year"
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
     //% year.min=2020 year.max=2050 year.defl=2020
