@@ -63,8 +63,8 @@ namespace timeanddate
             currentUs = us_ticker_read();
             // If it was near the end of the phase, read again 
             // (avoid non-atomic access / race condition error)
-            while((us_ticker_read() & 0xFFFF) > 0xFFC0) {  
-                // Ensure timer before last 64uS of cycle
+            while((currentUs & 0x0000FFFF) > 0x0000FFC0) {  
+                // Ensure timer before last 64uS of cycle (uS ticker should be about 5uS? Check!)
                 nrf_delay_us(100);
                 currentUs = us_ticker_read();
             }
