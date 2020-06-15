@@ -5,7 +5,7 @@ This extension allows the micro:bit to track the time and date.  It can also be 
 [stopwatch](#stopwatch-behavior)-like capabilities.
 
 It's importantant to be aware that:
-- This extension uses a counter that may only accurate to about 10 parts per million, which is approximately 1.152 seconds per day.  The accuracy may change based on the environment (heat/cold) and from micro:bit to micro:bit. If accuracy is important, 
+- This extension uses a counter that may only accurate to about 10 parts per million, which is approximately 0.864 seconds per day.  The accuracy may change based on the environment (heat/cold) and from micro:bit to micro:bit. If accuracy is important, 
 you can use the stopwatch experiment described [below](#measuring-accuracy-and-calibrating) to estimate the accuracy of your micro:bit where you plan to use it. 
 - The time needs to be set each time the micro:bit is reprogrammed or restarts.  
 

@@ -1,7 +1,8 @@
 /**
  * Provides a software based running clock for the time and date for the micro:bit. 
- * The micro:bit doesn't have a true real-time clock.  In order to minimize power consumption, this relies on an imprecise clock.
- * The margin of error is +/- 22 seconds per 24-hour period and will vary from micro:bit to micro:bit and based on temperature.
+ * The micro:bit doesn't have a true real-time clock. The microbit uses a timer derived from the
+ * 16MHz clock, which is crystal based and should have an accuracy near 10 part per mission, 
+ * or about 0.864 seconds/day.
  *
  * @author Bill Siever
  */
