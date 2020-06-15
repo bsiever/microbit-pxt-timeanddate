@@ -5,16 +5,15 @@ This extension allows the micro:bit to track the time and date.  It can also be 
 [stopwatch](#stopwatch-behavior)-like capabilities.
 
 It's importantant to be aware that:
-- This extension uses a counter that may only accurate to about 250 parts per million, which is approximately 22 seconds per day.  The accuracy may change based on the environment (heat/cold) and from micro:bit to micro:bit. If accuracy is important, 
+- This extension uses a counter that may only accurate to about 10 parts per million, which is approximately 1.152 seconds per day.  The accuracy may change based on the environment (heat/cold) and from micro:bit to micro:bit. If accuracy is important, 
 you can use the stopwatch experiment described [below](#measuring-accuracy-and-calibrating) to estimate the accuracy of your micro:bit where you plan to use it. 
-  - In tests at room temperature it is generally accurate to within 1 second per day
 - The time needs to be set each time the micro:bit is reprogrammed or restarts.  
 
 ## Setting the Time
 
 There are three common approaches to setting the time:
 
-1. [Synchronize at startup](#1-synchronize-at-startup) (easiest, but requires reprogramming)
+1. [Synchronize at startup](#1-synchronize-at-startup) (easiest, but requires updating the program)
 2. [Time advancing / rewinding](#2-time-advancing-rewinding)
 3. [Digits count up / count down](#3-digits-count-up-count-down)
 
@@ -36,24 +35,24 @@ Once you're ready to program the micro:bit:
 1. Update the time/date being used so the time is approximately 1 minute in the future.  
 2. Program the micro:bit 
 3. Watch the real time carefully. 
-4. About 2 seconds before the programmed time, press the reset button on the back of the 
+4. About 2 seconds before the programmed time press the reset button on the back of the 
 micro:bit. 
-   * The micro:bit takes about 2 seconds to restart and will then "set" the time.
-
-For the example above the micro:bit would be reset at 13:29.58s on Jan. 20, 2020.  It would set the date and time at almost exactly the time they indicate. 
+   * The micro:bit takes about 2 seconds to restart. This causes the "set" block to run at the correct time.
+   
+For the example above the micro:bit would be reset at 13:29.58s on Jan. 20, 2020.  It would set the date and time at almost exactly the time indicated in the set block. 
 
 ### 2. Time advancing / rewinding 
 
 
 This is the approach used by mechanical clocks, where time is
- set by moving the hour hand forward (or, possibly, backwards). Moving the minutes forward may cause the hours
- to change. This is  a tedious way to set dates and should probably only be used for adjusting the time. 
+ set by moving the minute hand forward (or, possibly, backwards). Moving the minutes forward may cause the hours
+ to change. And as hours change the date could change.
+ 
+This is  a tedious way to set dates and should probably only be used for adjusting the time. 
 
 #### 2.1 Simplest Approach
 
-Here's the simplest approach, wehre the buttons are dedicated to setting the time:
-
-For example, the time could be set by advancing or backing it up one minute at a time using the A and B buttons:
+Here's the simplest approach, where the buttons are dedicated to setting the time:
 
 ```blocks
 input.onButtonPressed(Button.A, function () {
@@ -64,6 +63,8 @@ input.onButtonPressed(Button.B, function () {
     timeanddate.advanceBy(-1, timeanddate.TimeUnit.Minutes)
 })
 ```
+
+The buttons change the time one minute at a time (forward or backward).  Advancing the minutes beyond 59 or before 0 will cause the hour to change.
 
 #### 2.2 Alternate Approach: Setting at startup 
 
@@ -95,15 +96,15 @@ while (!(input.buttonIsPressed(Button.B))) {
 
 If setting the date this way it's best to use the ``[timeanddate.setDate()]`` to select a year near the current year.
 
+**This may not work correctly when the total time is before the year specified in ``[timeanddate.setDate()]``.   That is, if ``[timeanddate.setDate(1, 20, 2024)]`` specifies 2024, then negative values should **not** "rollback" before Jan 1, 2024.**
+
 ### 3. Digits count up / count down 
 
 This approach should be done on each digits of the time (minutes, hours, and if the date is important too, day, month, and year).  
 
-**This may not work correctly when the total time is before the year specified in ``[timeanddate.setDate()]``.   That is, if ``[timeanddate.setDate(1, 20, 2024)]`` specifies 2024, then negative values should **not** "rollback" before Jan 1, 2024.**
-
 #### 3.1 Simplest Approach Example
 
-Here's an example that focuses on just the minutes:
+Here's an example that focuses on just the minutes (additional code is needed for hours, etc.):
 
 ```blocks
 input.onButtonPressed(Button.B, function () {
@@ -117,10 +118,9 @@ input.onButtonPressed(Button.A, function () {
         timeanddate.set24HourTime(hour, minute + 1, second)
     })
 })
-// Still need to set hours!
 ```
 
-Since the time setting commands use modular arithmetic, adding and subtracting to the prior value will "roll over" in the expected way and will not impact the hours, like the adding approach would. 
+Since the time setting commands use modular arithmetic, adding and subtracting to the prior value will "rollover" in the expected way and will not impact the hours, like the advancing approach would. 
 
 #### 3.2 Alternate Approach: Setting Hour/Minute at Start
 
@@ -131,7 +131,7 @@ The following can be used to set the time at startup.  It will scroll the time c
 3. Then repeat the process for the minute.  
 4. When done hold "A+B" until the message stops scrolling.  
 
-There's additional code that displays the time after pressing "A" to check your work.
+Once the time has been set the additional code that displays the time when "A" is pressed.
 
 ```blocks
 input.onButtonPressed(Button.A, function () {
