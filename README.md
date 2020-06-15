@@ -22,37 +22,43 @@ Using a reasonable "startup value" as described in
 
 ### 1. Synchronize at startup
 
-Synchronizing the time at startup is the easiest approach, but it requires re-programming the micro:bit everytime the time needs to be set (like whenever it is restarted).  The `startup` will include blocks to set the time, like:
+Synchronizing the time at startup is the easiest approach, but it requires re-programming the micro:bit everytime the time needs to be set (like whenever it is restarted).  The start up process just needs to include 
+setting the time, like:
 
 ```blocks
 timeanddate.setDate(1, 20, 2020)
 timeanddate.set24HourTime(13, 30, 0)
 ```
-Setting the date can be left out if there's no need to keep track of the date, like if you want a 
-wearable that won't display the date. 
+
+### ~hint
+
+#### Date is Optional!
+
+If you just care about time and not the date, you don't have to set the date.
+
+### ~
 
 Once you're ready to program the micro:bit:
 1. Update the time/date being used so the time is approximately 1 minute in the future.  
 2. Program the micro:bit 
 3. Watch the real time carefully. 
-4. About 2 seconds before the programmed time press the reset button on the back of the 
+4. About 1-2 seconds before the programmed time press the reset button on the back of the 
 micro:bit. 
-   * The micro:bit takes about 2 seconds to restart. This causes the "set" block to run at the correct time.
+   * The micro:bit takes about 1-2 seconds to restart. This causes the "set" to run at the correct time.
    
-For the example above the micro:bit would be reset at 13:29.58s on Jan. 20, 2020.  It would set the date and time at almost exactly the time indicated in the set block. 
+For the example above, the micro:bit would be reset at 13:29.58s on Jan. 20, 2020.  It would set the date and time at almost exactly the time indicated in the set block. 
 
 ### 2. Time advancing / rewinding 
 
-
 This is the approach used by mechanical clocks, where time is
  set by moving the minute hand forward (or, possibly, backwards). Moving the minutes forward may cause the hours
- to change. And as hours change the date could change.
+ to change too. And as hours change the date could change, etc.
  
-This is  a tedious way to set dates and should probably only be used for adjusting the time. 
+This is  a tedious way to set dates and should probably only be used when the date will never be needed and just the time needs to be set. 
 
 #### 2.1 Simplest Approach
 
-Here's the simplest approach, where the buttons are dedicated to setting the time:
+Here's the simplest approach, where the buttons are dedicated to setting the time :
 
 ```blocks
 input.onButtonPressed(Button.A, function () {
@@ -369,6 +375,42 @@ basic.forever(function () {
         binaryDisplayOf(10, 2)
     } else {
         binaryDisplayOf(0, 2)
+    }
+})
+```
+
+# Bonus: A Stopwatch
+
+```blocks
+input.onButtonPressed(Button.A, function () {
+    running = !(running)
+    if (running) {
+        timeanddate.set24HourTime(0, 0, 0)
+    } else {
+        captured = timeanddate.time(timeanddate.TimeFormat.HHMMSS24hr)
+        basic.showString(captured)
+    }
+})
+input.onButtonPressed(Button.B, function () {
+    if (!(running)) {
+        basic.showString(captured)
+    }
+})
+let dotLocation = 0
+let xy = 0
+let captured = ""
+let running = false
+running = false
+let coords = [11, 21, 31, 32, 33, 23, 13, 12]
+basic.forever(function () {
+    if (running) {
+        basic.clearScreen()
+        xy = coords[dotLocation]
+        led.toggle(Math.idiv(xy, 10), xy % 10)
+        basic.pause(1000/8)
+        dotLocation = (dotLocation + 1) % 8
+    } else {
+        basic.showIcon(IconNames.No)
     }
 })
 ```
