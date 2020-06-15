@@ -1,7 +1,7 @@
 /**
  * Provides a software based running clock for the time and date for the micro:bit. 
  * The micro:bit doesn't have a true real-time clock. The microbit uses a timer derived from the
- * 16MHz clock, which is crystal based and should have an accuracy near 10 part per mission, 
+ * 16MHz clock, which is crystal based and should have an accuracy near 10 part per million, 
  * or about 0.864 seconds/day.
  *
  * @author Bill Siever
