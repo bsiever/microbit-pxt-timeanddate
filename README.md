@@ -17,8 +17,8 @@ There are three common approaches to setting the time:
 2. [Time advancing / rewinding](#2-time-advancing-rewinding)
 3. [Digits count up / count down](#3-digits-count-up-count-down)
 
-Using a reasonable "startup value" as described in 
-[Synchronize at startup](#synchronize-at-startup) will make the last two approaches easier.
+Using a reasonable "startup value", as described in 
+[Synchronize at startup](#synchronize-at-startup), will make the last two approaches easier.
 
 ### 1. Synchronize at startup
 
@@ -102,7 +102,7 @@ while (!(input.buttonIsPressed(Button.B))) {
 
 If setting the date this way it's best to use the ``[timeanddate.setDate()]`` to select a year near the current year.
 
-**This may not work correctly when the total time is before the year specified in ``[timeanddate.setDate()]``.   That is, if ``[timeanddate.setDate(1, 20, 2024)]`` specifies 2024, then negative values should **not** "rollback" before Jan 1, 2024.**
+**This may not work correctly when the total time is before the year specified in ``[timeanddate.setDate()]``.   That is, if ``[timeanddate.setDate(1, 20, 2024)]`` specifies 2024, then negative values should not "rollback" before Jan 1, 2024.**
 
 ### 3. Digits count up / count down 
 
@@ -274,13 +274,11 @@ Use a stopwatch or stopwatch app on a computer/phone. To start measurement:
 3. Reset the micro:bit
 4. As soon as you see the heart on the micro:bit start the stopwatch 
 
-Generally you'd expect the micro:bit to be accurate to within about 1 second per hour or better.  This experiment also depends on your reaction time, which is probably about 0-2 seconds.  Consequently you may need to let it run for severl hours to estimate the actual accuracy. 
+The micro:bit should be accurate to within about 1 second per day or better.  This experiment depends on your reaction time, which is probably about 0-2 seconds.  Consequently you may need to let it run for several days to estimate the accuracy. 
 
 To estimate the accuracy:
 1. Look at the stopwatch.  Pick a precise instant that you'll take the measurement and keep it in mind.  For example, if the  stop watch reads 2:13.20 you may decide to make the measurement at 2:14.00. 
 2. At that precise instant press the "A" button.  The micro:bit will scroll it's current record of the time.  Compare it to the expected time.  For example, if the microbit indicated 0000-01-01 02:13.22 you'd estimate that the microbit  is about 2 seconds ahead. Since it's been running for 134 minutes, you'd estimate that it's gaining 2/134 seconds/minute. Since there are 1440 minutes in a day, this works out to about 21.5 seconds per day.
-
-Since there may be a ~1s error in your reaction time, it's probably best to try to measure the error over many hours or days. 
 
 ### ~tip
 
@@ -380,6 +378,9 @@ basic.forever(function () {
 ```
 
 # Bonus: A Stopwatch
+
+Here's a simple stopwatch.  "A" starts and stops the count. The count will be automatically displayed
+when it's stopped, but pressing "B" will re-display it.
 
 ```blocks
 input.onButtonPressed(Button.A, function () {
