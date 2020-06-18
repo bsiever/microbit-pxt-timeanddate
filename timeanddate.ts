@@ -77,7 +77,7 @@ namespace timeanddate {
         //% block="as month/day"
         MD,
         //% block="as month/day/year"
-        MDYYYY,
+        MDY,
         //% block="as year-month-day"
         YYYY_MM_DD
     }
@@ -325,7 +325,7 @@ namespace timeanddate {
         // Adjust to 24-hour time format
         if (ampm == MornNight.AM && hour == 12) {  // 12am -> 0 hundred hours
             hour = 0;
-        } else if (hour < 12) {        // PMs other than 12 get shifted after 12:00 hours
+        } else if (ampm == MornNight.PM && hour != 12) {   // PMs other than 12 get shifted after 12:00 hours
             hour = hour + 12;
         }
         set24HourTime(hour, minute, second);
@@ -416,7 +416,7 @@ namespace timeanddate {
             case DateFormat.MD:
                 return t.month + "/" + t.day
                 break
-            case DateFormat.MDYYYY:
+            case DateFormat.MDY:
                 return t.month + "/" + t.day + "/" + t.year
                 break
             case DateFormat.YYYY_MM_DD:
