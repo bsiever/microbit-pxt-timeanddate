@@ -9,8 +9,8 @@ It's importantant to be aware that:
 you can use the stopwatch experiment described [below](#measuring-accuracy-and-calibrating) to estimate the accuracy of your micro:bit where you plan to use it. 
 - The time needs to be set each time the micro:bit is reprogrammed or restarts.  
 
-## Setting the Time
-
+## Setting the Time #setting-the-time
+s
 There are three common approaches to setting the time:
 
 1. [Synchronize at startup](#1-synchronize-at-startup) (easiest, but requires updating the program)
@@ -18,9 +18,9 @@ There are three common approaches to setting the time:
 3. [Digits count up / count down](#3-digits-count-up-count-down)
 
 Using a reasonable "startup value", as described in 
-[Synchronize at startup](#synchronize-at-startup), will make the last two approaches easier.
+[Synchronize at startup](#1-synchronize-at-startup), will make the last two approaches easier.
 
-### 1. Synchronize at startup
+### 1. Synchronize at startup #1-synchronize-at-startup
 
 Synchronizing the time at startup is the easiest approach, but it requires re-programming the micro:bit everytime the time needs to be set (like whenever it is restarted).  The start up process just needs to include 
 setting the time, like:
@@ -48,7 +48,7 @@ micro:bit.
    
 For the example above, the micro:bit would be reset at 13:29.58s on Jan. 20, 2020.  It would set the date and time at almost exactly the time indicated in the set block. 
 
-### 2. Time advancing / rewinding 
+### 2. Time advancing / rewinding #2-time-advancing-rewinding
 
 This is the approach used by mechanical clocks, where time is
  set by moving the minute hand forward (or, possibly, backwards). Moving the minutes forward may cause the hours
@@ -104,7 +104,7 @@ If setting the date this way it's best to use the ``[timeanddate.setDate()]`` to
 
 **This may not work correctly when the total time is before the year specified in ``[timeanddate.setDate()]``.   That is, if ``[timeanddate.setDate(1, 20, 2024)]`` specifies 2024, then negative values should not "rollback" before Jan 1, 2024.**
 
-### 3. Digits count up / count down 
+### 3. Digits count up / count down #3-digits-count-up-count-down
 
 This approach should be done on each digits of the time (minutes, hours, and if the date is important too, day, month, and year).  
 
@@ -323,7 +323,7 @@ timeanddate.dateToDayOfYear()
 to determine the ordinal day of the year.  1 is Jan. 1, 2, is Jan 2, etc.  Dec. 31 is either 365 or 366 (in a leap year).
 
 
-# Measuring Accuracy and Calibrating
+# Measuring Accuracy and Calibrating #measuring-accuracy-and-calibrating
 
 Accuracy can be estimated by comparing your micro:bit to an actual, accurate stopwatch.  
 
@@ -362,7 +362,7 @@ If you measure the accuracy and it's consistent/predictable, you may be able to 
 ### ~
 
 
-# Stopwatch behavior
+# Stopwatch behavior #stopwatch-behavior
 
 By use of setting time to 0:0.0 this can be used as a simple stopwatch.  For example, for timing things that are less than 24 hours:
 
