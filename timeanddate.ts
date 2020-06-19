@@ -330,17 +330,6 @@ namespace timeanddate {
             timeToSetpoint += amount * units[unit]
     }
 
-    // /**
-    //  * Get all values of time as numbers.  
-    //  */
-    // //% block="current time as numbers $hour:$minute.$second on $weekday, $day/$month/$year, $dayOfYear" advanced=true
-    // //% draggableParameters=variable
-    // //% handlerStatement=1
-    // export function numericTime(handler: (hour: Hour, minute: Minute, second: Second, weekday: Weekday, day: Day, month: Month, year: Year, dayOfYear: DayOfYear) => void) {
-    //     const cpuTime = cpuTimeInSeconds()
-    //     const t = timeFor(cpuTime)
-    //     handler(t.hour, t.minute, t.second, dayOfWeek(t.dayOfYear, t.year), t.day, t.month, t.year, t.dayOfYear)
-    // }
 
     /**
      * Get the Day of the week  

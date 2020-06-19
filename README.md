@@ -114,13 +114,13 @@ Here's an example that focuses on just the minutes (additional code is needed fo
 
 ```blocks
 input.onButtonPressed(Button.B, function () {
-    timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+    timeanddate.numericTime(function (hour, minute, second,  month, day, year) {
         timeanddate.set24HourTime(hour, minute + -1, second)
     })
 })
 
 input.onButtonPressed(Button.A, function () {
-    timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+    timeanddate.numericTime(function (hour, minute, second,  month, day, year) {
         timeanddate.set24HourTime(hour, minute + 1, second)
     })
 })
@@ -146,7 +146,7 @@ input.onButtonPressed(Button.A, function () {
 timeanddate.setTime(11, 30, 0, timeanddate.MornNight.AM)
 basic.showString("Set Hour")
 while (!(input.buttonIsPressed(Button.AB))) {
-    timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+    timeanddate.numericTime(function (hour, minute, second, month, day, year) {
         if (input.buttonIsPressed(Button.A)) {
             timeanddate.set24HourTime(hour + 1, minute, 0)
         } else if (input.buttonIsPressed(Button.B)) {
@@ -157,7 +157,7 @@ while (!(input.buttonIsPressed(Button.AB))) {
 }
 basic.showString("Set Min")
 while (!(input.buttonIsPressed(Button.AB))) {
-    timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+    timeanddate.numericTime(function (hour, minute, second, month, day,  year) {
         if (input.buttonIsPressed(Button.A)) {
             timeanddate.set24HourTime(hour, minute + 1, 0)
         } else if (input.buttonIsPressed(Button.B)) {
@@ -227,7 +227,7 @@ Use the timestamp  or the ``[timeanddate.numericTime()]`` block to get numeric v
 Numeric values of time/date can be useful for things like alarm clocks.  Use:
 
 ```sig
-timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+timeanddate.numericTime(function (hour, minute, second, month, day, year) {
 })
 ```
 
@@ -374,7 +374,7 @@ while (!(input.buttonIsPressed(Button.B))) {
 }
 let blink = false
 basic.forever(function () {
-    timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
+    timeanddate.numericTime(function (hour, minute, second, month, day, year) {
         hour = 0 % 12
         if (hour == 0) {
             hour = 12
