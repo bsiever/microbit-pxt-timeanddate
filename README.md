@@ -168,23 +168,21 @@ while (!(input.buttonIsPressed(Button.AB))) {
 }
 ```
 
-
-
 # Full API 
 
-## Setting Time Using 24-hour Format #timeanddate_set24HourTime
+## Setting Time Using 24-hour Format #timeanddate-set24HourTime
 
 Use `[timeanddate.set24HourTime()]` to set the time using 24-hour format (hours from 0-23, minutes from 0-59, seconds from 0-59). See [Setting the Time](#setting-the-time).
 
-## Setting Time Using AM/PM Format #timeanddate_setTime
+## Setting Time Using AM/PM Format #timeanddate-setTime
 
 Use `[timeanddate.setTime()]` to set the time using am/pm format (hours from 1-12, minutes from 0-59, seconds from 0-59).  See [Setting the Time](#setting-the-time).
 
-## Setting the Date #timeanddate_setDate
+## Setting the Date #timeanddate-setDate
 
 Use `[timeanddate.setDate()]` to set the date (month from 1-12, day from 1-31, year from 0000-9999). See [Setting the Time](#setting-the-time).
 
-## Getting the Time (string) #timeanddate_time
+## Getting the Time (string) #timeanddate-time
 
 ```sig
 timeanddate.time(timeanddate.TimeFormat.HMM)
@@ -195,7 +193,7 @@ Provides the current time in the selected format.
 If no time has been set, the time will be based on when the micro:bit started (was reset).  By default time starts at 00:00.00 on 0000-01-01.
 
 
-## Getting the Date (string) #timeanddate_date
+## Getting the Date (string) #timeanddate-date
 
 ```sig
 timeanddate.date(timeanddate.DateFormat.MD)
@@ -215,7 +213,7 @@ Use the timestamp  or the ``[timeanddate.numericTime()]`` block to get numeric v
 
 ### ~
 
-## Timestamps (string) #timeanddate_dateStamp
+## Timestamps (string) #timeanddate-dateStamp
 
 Often a "timestamp" is needed to record events, like when measurements are taken for a science experiment.  Use:
 
@@ -233,7 +231,7 @@ Use timestamps when logging events that happen over multiple days  (more than 24
 
 ### ~
 
-## Accessing numeric values of time / date #timeanddate_numericTime
+## Accessing numeric values of time / date #timeanddate-numericTime
  
 Numeric values of time/date can be useful for things like alarm clocks.  Use:
 
@@ -259,7 +257,7 @@ when it had changed to 2020-01-02.  The combined date and time would appear to b
 
 ### ~
 
-## Advancing and Adjusting Time #timeanddate_advanceBy 
+## Advancing and Adjusting Time #timeanddate-advanceBy 
 
 ```sig
 timeanddate.advanceBy(amount: number, unit: TimeUnit)
@@ -273,7 +271,7 @@ It behaves like a mechanical clock: Advancing the minutes causes the hour to adv
 for adjusting the clocks accuracy (adding seconds occasionally if it's slow) or adjusting 
 for changes in timezone or daylight savings time.
 
-## Seconds the Micro:bit has been running #timeanddate_secondsSinceReset
+## Seconds the Micro:bit has been running #timeanddate-secondsSinceReset
 
 ```sig
 timeanddate.secondsSinceReset()
@@ -281,7 +279,7 @@ timeanddate.secondsSinceReset()
 
 Reports the time (in seconds) since the micro:bit started.
 
-## Minute Changing #timeanddate_onMinuteChanged
+## Minute Changing #timeanddate-onMinuteChanged
 
 ```sig 
 timeAndDate.onMinuteChanged(handler: () => void)
@@ -289,7 +287,7 @@ timeAndDate.onMinuteChanged(handler: () => void)
 The provided code will run when the minute changes. 
 
 
-## Hour Changing #timeanddate_onHourChanged
+## Hour Changing #timeanddate-onHourChanged
 
 ```sig 
 timeAndDate.onHourChanged(handler: () => void)
@@ -297,7 +295,7 @@ timeAndDate.onHourChanged(handler: () => void)
 The provided code will run when the hour changes. 
 
 
-## Day Changing #timeanddate_onDayChanged
+## Day Changing #timeanddate-onDayChanged
 
 ```sig 
 timeAndDate.onDayChanged(handler: () => void)
@@ -305,7 +303,7 @@ timeAndDate.onDayChanged(handler: () => void)
 The provided code will run when the day changes. 
 
 
-## Weekdays #timeanddate_dayOfWeek
+## Weekdays #timeanddate-dayOfWeek
 
 Once you have the day, month, and year, you can use them on the:
 ```sig
@@ -314,7 +312,7 @@ timeanddate.dateOfWeek()
 
 to determine the day of the week.  It returns a numeric code, where 0 is Monday, 1 is Tuesday, etc.
 
-## Day of the Year #timeanddate_dateToDayOfYear
+## Day of the Year #timeanddate-dateToDayOfYear
 
 Once you have the day, month, and year, you can use them on the:
 ```sig
