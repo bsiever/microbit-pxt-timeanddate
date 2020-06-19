@@ -154,13 +154,13 @@ assert("time4e", "1:59.59am", timeanddate.time(timeanddate.TimeFormat.HMMSSAMPM)
 
 
 // Test Day Of Week
-assert("dow1", 0, timeanddate.dayOfWeek(1, 20, 2020))
-assert("dow2", 1, timeanddate.dayOfWeek(1, 21, 2020))
-assert("dow3", 5, timeanddate.dayOfWeek(2, 29, 2020))
-assert("dow4", 6, timeanddate.dayOfWeek(3, 1, 2020))
-assert("dow5", 0, timeanddate.dayOfWeek(3, 1, 2021))
-assert("dow6", 1, timeanddate.dayOfWeek(3, 1, 2022))
-assert("dow7", 4, timeanddate.dayOfWeek(3, 1, 2024))
+assert("dow1", 0, timeanddate.dateToDayOfWeek(1, 20, 2020))
+assert("dow2", 1, timeanddate.dateToDayOfWeek(1, 21, 2020))
+assert("dow3", 5, timeanddate.dateToDayOfWeek(2, 29, 2020))
+assert("dow4", 6, timeanddate.dateToDayOfWeek(3, 1, 2020))
+assert("dow5", 0, timeanddate.dateToDayOfWeek(3, 1, 2021))
+assert("dow6", 1, timeanddate.dateToDayOfWeek(3, 1, 2022))
+assert("dow7", 4, timeanddate.dateToDayOfWeek(3, 1, 2024))
 
 // Test Day Of Year
 assert("doy1", 1, timeanddate.dateToDayOfYear(1, 1, 2020))

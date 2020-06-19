@@ -343,7 +343,7 @@ namespace timeanddate {
     //% day.min=1 day.max=31 day.defl=20
     //% year.min=2020 year.max=2050 year.defl=2020
     //% weight=40
-    export function dayOfWeek(month: Month, day: Day, year: Year): Weekday {
+    export function dateToDayOfWeek(month: Month, day: Day, year: Year): Weekday {
         let doy = dateToDayOfYear(month, day, year)
         // Gauss's Algorithm for Jan 1: https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week
         // R(1+5R(A-1,4)+4R(A-1,100)+6R(A-1,400),7)    
