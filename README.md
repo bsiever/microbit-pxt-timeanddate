@@ -282,24 +282,26 @@ Reports the time (in seconds) since the micro:bit started.
 ## Minute Changing #timeanddate-onminutechanged
 
 ```sig 
-timeAndDate.onMinuteChanged(handler: () => void)
+timeanddate.onMinuteChanged(handler: () => void)
 ```
 The provided code will run when the minute changes. 
 
 
 ## Hour Changing #timeanddate-onhourchanged
 
-```sig 
-timeAndDate.onHourChanged(handler: () => void)
+```sig
+timeanddate.onHourChanged(handler: () => void)
 ```
+
 The provided code will run when the hour changes. 
 
 
 ## Day Changing #timeanddate-ondaychanged
 
-```sig 
-timeAndDate.onDayChanged(handler: () => void)
+```sig
+timeanddate.onDayChanged(handler: () => void)
 ```
+
 The provided code will run when the day changes. 
 
 
@@ -307,7 +309,7 @@ The provided code will run when the day changes.
 
 Once you have the day, month, and year, you can use them on the:
 ```sig
-timeanddate.dateOfWeek()
+timeanddate.dateToDayOfWeek()
 ```
 
 to determine the day of the week.  It returns a numeric code, where 0 is Monday, 1 is Tuesday, etc.
