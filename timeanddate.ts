@@ -159,15 +159,6 @@ namespace timeanddate {
         // return y % 4 == 0
     }
 
-    function dateToDayOfYear(m: Month, d: Day, y: Year) {
-        // Assumes a valid date
-        let dayOfYear = cdoy[m] + d
-        // Handle after Feb in leap years:
-        if (m > 2 && isLeapYear(y)) {
-            dayOfYear += 1
-        }
-        return dayOfYear
-    }
 
     // Returns a MonthDay with from a DayOfYear and given Year
     function dayOfYearToMonthAndDay(d: DayOfYear, y: Year): MonthDay {
@@ -245,13 +236,6 @@ namespace timeanddate {
         return value
     }
 
-    function dayOfWeek(doy: DayOfYear, y: Year): Weekday {
-        // Gauss's Algorithm for Jan 1: https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week
-        // R(1+5R(A-1,4)+4R(A-1,100)+6R(A-1,400),7)    
-        let jan1 = ((1+5*( (y-1) % 4)+4*( (y-1) % 100)+6* ( (y-1) % 400)) % 7) 
-        jan1 += 6  // Shift range:  Gauss used 0=Sunday, we'll use 0=Monday
-        return ( (doy-1) + jan1 ) % 7
-    }
 
     // 24-hour time:  hh:mm.ss
     function fullTime(t: DateTime): string {
@@ -346,16 +330,58 @@ namespace timeanddate {
             timeToSetpoint += amount * units[unit]
     }
 
+    // /**
+    //  * Get all values of time as numbers.  
+    //  */
+    // //% block="current time as numbers $hour:$minute.$second on $weekday, $day/$month/$year, $dayOfYear" advanced=true
+    // //% draggableParameters=variable
+    // //% handlerStatement=1
+    // export function numericTime(handler: (hour: Hour, minute: Minute, second: Second, weekday: Weekday, day: Day, month: Month, year: Year, dayOfYear: DayOfYear) => void) {
+    //     const cpuTime = cpuTimeInSeconds()
+    //     const t = timeFor(cpuTime)
+    //     handler(t.hour, t.minute, t.second, dayOfWeek(t.dayOfYear, t.year), t.day, t.month, t.year, t.dayOfYear)
+    // }
+
+    /**
+     * Get the Day of the week  
+     *  0=>Monday, 1=>Tuesday, etc.
+     */
+    //% block="day of week for $month/$day/$year" advanced=true
+    export function dayOfWeek(month: Month, day: Day, year: Year): Weekday {
+        let doy = dateToDayOfYear(month, day, year)
+        // Gauss's Algorithm for Jan 1: https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week
+        // R(1+5R(A-1,4)+4R(A-1,100)+6R(A-1,400),7)    
+        let jan1 = ((1+5*( (year-1) % 4)+4*( (year-1) % 100)+6* ( (year-1) % 400)) % 7) 
+        jan1 += 6  // Shift range:  Gauss used 0=Sunday, we'll use 0=Monday
+        return ( (doy-1) + jan1 ) % 7
+    }
+
+    /**
+     * Get the Day of the year  
+     *  Jan 1 = 1, Jan 2=2, Dec 31 is 365 or 366
+     */
+    //% block="day of year for $month/$day/$year" advanced=true
+    export function dateToDayOfYear(month: Month, day: Day, year: Year) : DayOfYear{
+        month = Math.constrain(month, 1, 12)
+        // Assumes a valid date
+        let dayOfYear = cdoy[month] + day
+        // Handle after Feb in leap years:
+        if (month > 2 && isLeapYear(year)) {
+            dayOfYear += 1
+        }
+        return dayOfYear
+    }
+
     /**
      * Get all values of time as numbers.  
      */
-    //% block="current time as numbers $hour:$minute.$second on $weekday, $day/$month/$year, $dayOfYear" advanced=true
+    //% block="current time as numbers $hour:$minute.$second on $month/$day/$year" advanced=true
     //% draggableParameters=variable
     //% handlerStatement=1
-    export function numericTime(handler: (hour: Hour, minute: Minute, second: Second, weekday: Weekday, day: Day, month: Month, year: Year, dayOfYear: DayOfYear) => void) {
+    export function numericTime(handler: (hour: Hour, minute: Minute, second: Second, month: Month, day: Day, year: Year) => void) {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
-        handler(t.hour, t.minute, t.second, dayOfWeek(t.dayOfYear, t.year), t.day, t.month, t.year, t.dayOfYear)
+        handler(t.hour, t.minute, t.second,  t.month, t.day, t.year)
     }
 
     /**

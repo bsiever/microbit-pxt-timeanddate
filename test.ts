@@ -10,11 +10,28 @@ function clearCounters() {
     minutes = 0
 }
 
+let errors = 0
+let testsRun = 0
 function assert(where: string, expected: any, actual: any) {
     if(expected==actual) {
       serial.writeLine(where + " : Passed")
+      testsRun += 1
     } else {
+      errors += 1
       serial.writeLine(where + " : FAILED\t Expected: " + expected + ' got: ' + actual)
+    }
+}
+
+function testingDone() {
+    if(errors==0) {
+        serial.writeLine("All " + testsRun + " tests passed")
+        basic.showIcon(IconNames.Happy)
+    } else {
+        serial.writeLine("Failed " + errors + " of " + testsRun)
+        while (true) {
+            basic.showIcon(IconNames.Sad)
+            basic.showNumber(errors)
+        }
     }
 }
 
@@ -132,22 +149,100 @@ assert("time4c", "1:59", timeanddate.time(timeanddate.TimeFormat.HMM))
 assert("time4d", "1:59am", timeanddate.time(timeanddate.TimeFormat.HMMAMPM))
 assert("time4e", "1:59.59am", timeanddate.time(timeanddate.TimeFormat.HMMSSAMPM))
 
+// Setting time with AM/PM converts to 24HourTime, so it has been tested
+// timeanddate.set24HourTime(13, 30, 0)
 
 
-// Test Date Formats
+// Test Day Of Week
+assert("dow1", 0, timeanddate.dayOfWeek(1, 20, 2020))
+assert("dow2", 1, timeanddate.dayOfWeek(1, 21, 2020))
+assert("dow3", 5, timeanddate.dayOfWeek(2, 29, 2020))
+assert("dow4", 6, timeanddate.dayOfWeek(3, 1, 2020))
+assert("dow5", 0, timeanddate.dayOfWeek(3, 1, 2021))
+assert("dow6", 1, timeanddate.dayOfWeek(3, 1, 2022))
+assert("dow7", 4, timeanddate.dayOfWeek(3, 1, 2024))
+
+// Test Day Of Year
+assert("doy1", 1, timeanddate.dateToDayOfYear(1, 1, 2020))
+assert("doy2", 61, timeanddate.dateToDayOfYear(3, 1, 2020))
+assert("doy3", 366, timeanddate.dateToDayOfYear(12, 31, 2020))
+assert("doy4", 60, timeanddate.dateToDayOfYear(3, 1, 2021))
+assert("doy5", 365, timeanddate.dateToDayOfYear(12, 31, 2021))
 
 
+// Test callbacks & numeric values 
+
+// Set date and let a minute pass to "set" old values
+timeanddate.setDate(1, 1, 21)
+timeanddate.set24HourTime(23, 59, 59)
+basic.pause(2500)   // Rolls over to 0:00.00 on 1/2/21
+timeanddate.set24HourTime(2, 22, 59)
+basic.pause(2500)   // Rolls over to 2:23:02 on 1/2/21
+// Day is 1, Hour is 2, minute is 22
+
+clearCounters()  // Clear hours, minutes, days
+timeanddate.setDate(4, 15, 21)
+timeanddate.set24HourTime(23, 59, 59)
+basic.pause(2500)   // + 1 to hours, minutes, days 0:00.02 on 4/16/20
+assert("cb1", 1, hours)
+assert("cb2", 1, minutes)
+assert("cb3", 1, days)
 
 
-/*
-TODO:  Functions to test
-Callbacks, and :
-timeanddate.advanceBy(0, timeanddate.TimeUnit.Milliseconds)
-timeanddate.set24HourTime(13, 30, 0)
-timeanddate.numericTime(function (hour, minute, second, weekday, day, month, year, dayOfYear) {
-	
+timeanddate.set24HourTime(0, 26, 59)
+basic.pause(2500)  // One more to minutes
+assert("cb4", 1, hours)
+assert("cb5", 2, minutes)
+assert("cb6", 1, days)
+timeanddate.set24HourTime(0, 59, 59)
+basic.pause(2500)
+assert("cb7", 2, hours)
+assert("cb8", 3, minutes)
+assert("cb9", 1, days)
+
+// Test time advancing and numericTime 
+timeanddate.setDate(4, 15, 21)
+timeanddate.setTime(2, 5, 10, timeanddate.MornNight.AM)
+timeanddate.advanceBy(10, timeanddate.TimeUnit.Seconds)  // a few seconds
+timeanddate.numericTime(function (hour, minute, second, month, day, year) {
+    assert("adv+nt1a", 20, second)
+    assert("adv+nt1b", 2, hour)
+    assert("adv+nt1c", 5, minute)
+    assert("adv+nt1d", 4, month)
+    assert("adv+nt1e", 15, day)
+    assert("adv+nt1f", 21, year)
 })
-    
 
-*/
+timeanddate.setDate(4, 15, 21)
+timeanddate.setTime(2, 5, 10, timeanddate.MornNight.AM)
+timeanddate.advanceBy(86405, timeanddate.TimeUnit.Seconds) // 1 day and 5 seconds
+timeanddate.numericTime(function (hour, minute, second, month, day, year) {
+    assert("adv+nt2a", 15, second)
+    assert("adv+nt2b", 2, hour)
+    assert("adv+nt2c", 5, minute)
+    assert("adv+nt2d", 4, month)
+    assert("adv+nt2e", 16, day)
+    assert("adv+nt2f", 21, year)
+})
+
+timeanddate.setDate(4, 15, 21)
+timeanddate.setTime(2, 5, 10, timeanddate.MornNight.AM)
+timeanddate.advanceBy(45, timeanddate.TimeUnit.Days) // 45 days
+timeanddate.numericTime(function (hour, minute, second, month, day, year) {
+    assert("adv+nt3a", 5, month)
+    assert("adv+nt3b", 30, day)
+    assert("adv+nt3c", 21, year)
+})
+
+timeanddate.setDate(4, 15, 21)
+timeanddate.setTime(2, 5, 10, timeanddate.MornNight.AM)
+timeanddate.advanceBy(380, timeanddate.TimeUnit.Days) // 380 days
+timeanddate.numericTime(function (hour, minute, second, month, day, year) {
+    assert("adv+nt4a", 4, month)
+    assert("adv+nt4b", 30, day)
+    assert("adv+nt4c", 22, year)
+})
+
+testingDone()
+
 }

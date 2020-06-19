@@ -234,11 +234,9 @@ timeanddate.numericTime(function (hour, minute, second, weekday, day, month, yea
 - Hour will be 0-23 (in 24-hour format)
 - Minute will be 0-59
 - Second will be 0-59.
-- Weekday indicates the day of the week (0-6), where 0 is Monday, 1 is Tuesday, etc.
 - Day will be 1-31
 - Month will be 1-12
 - Year is the year 0-65535
-- The day of the year will be 1-366. Jan. 1 would be 1, Jan. 2 would be 2, ... Dec. 31 will be 365 or 366 in a leap year.
 
 ### ~tip
 
@@ -249,6 +247,25 @@ and another block provided the date, it would be possible to access the time at 
 when it had changed to 2020-01-02.  The combined date and time would appear to be 23:59.59 on 2020-01-02 even though the 23:59.59 was actually on 2020-01-01.
 
 ### ~
+
+## Other Time-related values
+
+### Weekdays 
+
+Once you have the day, month, and year, you can use them on the:
+```sig
+timeanddate.dateToDayOfYear()
+```
+
+to determine the day of the week.  It returns a numeric code, where 0 is Monday, 1 is Tuesday, etc.
+
+### Day of the Year
+
+Once you have the day, month, and year, you can use them on the:
+```sig
+timeanddate.dateToDayOfYear()
+```
+to determine the ordinal day of the year.  1 is Jan. 1, 2, is Jan 2, etc.  Dec. 31 is either 365 or 366 (in a leap year).
 
 
 # Measuring Accuracy and Calibrating
