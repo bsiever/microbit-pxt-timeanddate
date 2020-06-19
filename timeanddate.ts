@@ -261,6 +261,7 @@ namespace timeanddate {
     //% hour.min=0 hour.max=23 hour.defl=13
     //% minute.min=0 minute.max=59 minute.defl=30
     //% second.min=0 second.max=59 second.defl=0
+    //% weight=90
     export function set24HourTime(hour: Hour, minute: Minute, second: Second) {
         hour = hour % 24
         minute = minute % 60
@@ -281,6 +282,7 @@ namespace timeanddate {
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
     //% year.min=2020 year.max=2050 year.defl=2020
+    //% weight=80
     //% help=test
     export function setDate(month: Month, day: Day, year: Year) {
         month = month % 13
@@ -304,6 +306,7 @@ namespace timeanddate {
     //% minute.min=0 minute.max=59 minute.defl=30
     //% second.min=0 second.max=59 second.defl=0
     //% inlineInputMode=inline
+    //% weight=100
     export function setTime(hour: Hour, minute: Minute, second: Second, ampm: MornNight) {
         hour = hour % 13
         // Adjust to 24-hour time format
@@ -320,7 +323,8 @@ namespace timeanddate {
      * @param amount the amount of time to add (or subtract if negative).  To avoid "carries" use withTime blocks
      * @param unit the unit of time
      */
-    //% block="advance time/date by | $amount | $unit "
+    //% block="advance time/date by | $amount | $unit " advanced=true
+    //% weight=50
     export function advanceBy(amount: number, unit: TimeUnit) {
         const units = [0, 1, 60 * 1, 60 * 60 * 1, 24 * 60 * 60 * 1]
         // Don't let time go negative:
@@ -335,7 +339,11 @@ namespace timeanddate {
      * Get the Day of the week  
      *  0=>Monday, 1=>Tuesday, etc.
      */
-    //% block="day of week for $month/$day/$year" advanced=true
+    //% block="day of week for month $month / day $day / year $year" advanced=true
+    //% month.min=1 month.max=12 month.defl=1
+    //% day.min=1 day.max=31 day.defl=20
+    //% year.min=2020 year.max=2050 year.defl=2020
+    //% weight=40
     export function dayOfWeek(month: Month, day: Day, year: Year): Weekday {
         let doy = dateToDayOfYear(month, day, year)
         // Gauss's Algorithm for Jan 1: https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week
@@ -349,7 +357,11 @@ namespace timeanddate {
      * Get the Day of the year  
      *  Jan 1 = 1, Jan 2=2, Dec 31 is 365 or 366
      */
-    //% block="day of year for $month/$day/$year" advanced=true
+    //% block="day of year for month $month / day $day / year $year" advanced=true
+    //% month.min=1 month.max=12 month.defl=1
+    //% day.min=1 day.max=31 day.defl=20
+    //% year.min=2020 year.max=2050 year.defl=2020
+    //% weight=30
     export function dateToDayOfYear(month: Month, day: Day, year: Year) : DayOfYear{
         month = Math.constrain(month, 1, 12)
         // Assumes a valid date
@@ -364,9 +376,10 @@ namespace timeanddate {
     /**
      * Get all values of time as numbers.  
      */
-    //% block="current time as numbers $hour:$minute.$second on $month/$day/$year" advanced=true
+    //% block="time as numbers $hour:$minute.$second on $month/$day/$year" advanced=true
     //% draggableParameters=variable
     //% handlerStatement=1
+    //% weight=100
     export function numericTime(handler: (hour: Hour, minute: Minute, second: Second, month: Month, day: Day, year: Year) => void) {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
@@ -377,7 +390,8 @@ namespace timeanddate {
      * Current time as a string in the format
      * @param format the format to use
      */
-    //% block="current time $format"
+    //% block="time as $format"
+    //% weight=70
     export function time(format: TimeFormat): string {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
@@ -423,7 +437,8 @@ namespace timeanddate {
      * Current date as a string in the format
      * @param format the format to use
      */
-    //% block="current date formatted $format"
+    //% block="current date as $format"
+    //% weight=60
     export function date(format: DateFormat): string {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
@@ -445,6 +460,7 @@ namespace timeanddate {
      * Current date and time in a timestamp format (YYYY-MM-DD HH:MM.SS).  
      */
     //% block="date and time stamp"
+    //% weight=50
     export function dateTime(): string {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
@@ -455,6 +471,7 @@ namespace timeanddate {
      * Seconds since start of micro:bit  
      */
     //% block="seconds since microbit start" advanced=true
+    //% weight=40
     export function secondsSinceReset(): number {
         return cpuTimeInSeconds()
     }
@@ -464,6 +481,7 @@ namespace timeanddate {
      * Called when minutes change
      */
     //% block="minute changed" advanced=true
+    //% weight=85
     export function onMinuteChanged(handler: () => void) {
         minuteChangeHandler = handler
     }
@@ -472,6 +490,7 @@ namespace timeanddate {
      * Called when hours change
      */
     //% block="hour changed" advanced=true
+    //% weight=80
     export function onHourChanged(handler: () => void) {
         hourChangeHandler = handler
     }
@@ -480,6 +499,7 @@ namespace timeanddate {
      * Called when days change
      */
     //% block="day changed" advanced=true
+    //% weight=75
     export function onDayChanged(handler: () => void) {
         dayChangeHandler = handler
     }
