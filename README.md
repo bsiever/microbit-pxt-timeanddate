@@ -213,7 +213,7 @@ Use the timestamp  or the ``[timeanddate.numericTime()]`` block to get numeric v
 
 ### ~
 
-## Timestamps (string) #timeanddate-datestamp
+## Timestamps (string) #timeanddate-datetime
 
 Often a "timestamp" is needed to record events, like when measurements are taken for a science experiment.  Use:
 
