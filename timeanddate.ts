@@ -436,7 +436,7 @@ namespace timeanddate {
      * Current date as a string in the format
      * @param format the format to use
      */
-    //% block="current date as $format"
+    //% block="date as $format"
     //% weight=60
     export function date(format: DateFormat): string {
         const cpuTime = cpuTimeInSeconds()
