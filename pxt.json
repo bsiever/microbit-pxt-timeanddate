@@ -1,6 +1,6 @@
 {
     "name": "microbit-pxt-timeanddate",
-    "version": "2.0.7",
+    "version": "2.0.8",
     "description": "Software based Real-Time Clock (Time & Date)",
     "dependencies": {
         "core": "*"
