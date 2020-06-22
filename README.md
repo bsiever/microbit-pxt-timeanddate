@@ -25,7 +25,7 @@ Using a reasonable "startup value", as described in
 Synchronizing the time at startup is the easiest approach, but it requires re-programming the micro:bit everytime the time needs to be set (like whenever it is restarted).  The start up process just needs to include 
 setting the time, like:
 
-```blocks
+```block
 timeanddate.setDate(1, 20, 2020)
 timeanddate.set24HourTime(13, 30, 0)
 ```
@@ -60,7 +60,7 @@ This is  a tedious way to set dates and should probably only be used when the da
 
 Here's the simplest approach, where the buttons are dedicated to setting the time :
 
-```blocks
+```block
 input.onButtonPressed(Button.A, function () {
     timeanddate.advanceBy(1, timeanddate.TimeUnit.Minutes)
 })
@@ -112,7 +112,7 @@ This approach should be done on each digits of the time (minutes, hours, and if 
 
 Here's an example that focuses on just the minutes (additional code is needed for hours, etc.):
 
-```blocks
+```block
 input.onButtonPressed(Button.B, function () {
     timeanddate.numericTime(function (hour, minute, second,  month, day, year) {
         timeanddate.set24HourTime(hour, minute + -1, second)
@@ -139,7 +139,7 @@ The following can be used to set the time at startup.  It will scroll the time c
 
 Once the time has been set the additional code that displays the time when "A" is pressed.
 
-```blocks
+```block
 input.onButtonPressed(Button.A, function () {
     basic.showString(timeanddate.time(timeanddate.TimeFormat.HMMAMPM))
 })
@@ -329,7 +329,7 @@ Accuracy can be estimated by comparing your micro:bit to an actual, accurate sto
 
 Use the following program, which will start the time at 00:00.00 (just like a stop watch). 
 
-```blocks
+```block
 input.onButtonPressed(Button.A, function () {
     basic.showString(timeanddate.dateTime())
 })
@@ -366,7 +366,7 @@ If you measure the accuracy and it's consistent/predictable, you may be able to 
 
 By use of setting time to 0:0.0 this can be used as a simple stopwatch.  For example, for timing things that are less than 24 hours:
 
-```blocks
+```block
 input.onButtonPressed(Button.A, function () {
     timeanddate.set24HourTime(0, 0, 0)
 })
@@ -394,7 +394,9 @@ timeanddate.set24HourTime(0, 0, 0)
 Here's a simple clock that will show time in binary code.  Each column represents a digit of the current 12-hour time. 
 The bottom most LED in each column is the 1's digit, the second from the bottom is the 2's, etc.  The middle column of the display will blink a pattern off and on to indicate each second.
 
-```blocks
+[Click here to open the shared project](https://makecode.microbit.org/_MJqeqei2aFjJ)
+
+```block
 function binaryDisplayOf (num: number, col: number) {
     for (let index = 0; index <= 4; index++) {
         if (Math.idiv(num, 2 ** index) % 2 == 1) {
@@ -454,7 +456,10 @@ basic.forever(function () {
 Here's a simple stopwatch.  "A" starts and stops the count. The count will be automatically displayed
 when it's stopped, but pressing "B" will re-display it.
 
-```blocks
+[Click here to open the shared project](https://makecode.microbit.org/_2MK536dctd0m)
+
+
+```block
 input.onButtonPressed(Button.A, function () {
     running = !(running)
     if (running) {
