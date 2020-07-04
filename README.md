@@ -5,25 +5,22 @@ This extension allows the micro:bit to track the time and date.  It can also be 
 [stopwatch](#stopwatch-behavior)-like capabilities.
 
 It's importantant to be aware that:
-- This extension uses a counter that may only accurate to about 10 parts per million, which is approximately 0.864 seconds per day.  The accuracy may change based on the environment (heat/cold) and from micro:bit to micro:bit. If accuracy is important, 
-you can use the stopwatch experiment described [below](#measuring-accuracy-and-calibrating) to estimate the accuracy of your micro:bit where you plan to use it. 
+- This extension uses a counter that may only be accurate to about 10 parts per million, which is approximately 0.864 seconds per day.  The accuracy may change based on the environment (heat/cold) and from micro:bit to micro:bit. If accuracy is important, you can use the stopwatch experiment described [below](#measuring-accuracy-and-calibrating) to estimate the accuracy of your micro:bit where you plan to use it. 
 - The time needs to be set each time the micro:bit is reprogrammed or restarts.  
 
 ## Setting the Time #setting-the-time
-s
+
 There are three common approaches to setting the time:
 
 1. [Synchronize at startup](#1-synchronize-at-startup) (easiest, but requires updating the program)
 2. [Time advancing / rewinding](#2-time-advancing-rewinding)
 3. [Digits count up / count down](#3-digits-count-up-count-down)
 
-Using a reasonable "startup value", as described in 
-[Synchronize at startup](#1-synchronize-at-startup), will make the last two approaches easier.
+Using a reasonable "startup value", as described in [Synchronize at startup](#1-synchronize-at-startup), will make the last two approaches easier.
 
 ### 1. Synchronize at startup #1-synchronize-at-startup
 
-Synchronizing the time at startup is the easiest approach, but it requires re-programming the micro:bit everytime the time needs to be set (like whenever it is restarted).  The start up process just needs to include 
-setting the time, like:
+Synchronizing the time at startup is the easiest approach, but it requires re-programming the micro:bit everytime the time needs to be set (like whenever it is restarted).  The start up process just needs to include setting the time, like:
 
 ```block
 timeanddate.setDate(1, 20, 2020)
@@ -42,17 +39,14 @@ Once you're ready to program the micro:bit:
 1. Update the time/date being used so the time is approximately 1 minute in the future.  
 2. Program the micro:bit 
 3. Watch the real time carefully. 
-4. About 1-2 seconds before the programmed time press the reset button on the back of the 
-micro:bit. 
+4. About 1-2 seconds before the programmed time press the reset button on the back of the micro:bit. 
    * The micro:bit takes about 1-2 seconds to restart. This causes the "set" to run at the correct time.
    
 For the example above, the micro:bit would be reset at 13:29.58s on Jan. 20, 2020.  It would set the date and time at almost exactly the time indicated in the set block. 
 
 ### 2. Time advancing / rewinding #2-time-advancing-rewinding
 
-This is the approach used by mechanical clocks, where time is
- set by moving the minute hand forward (or, possibly, backwards). Moving the minutes forward may cause the hours
- to change too. And as hours change the date could change, etc.
+This is the approach used by mechanical clocks, where time is set by moving the minute hand forward (or, possibly, backwards). Moving the minutes forward may cause the hours to change too. And as hours change the date could change, etc.
  
 This is  a tedious way to set dates and should probably only be used when the date will never be needed and just the time needs to be set. 
 
