@@ -5,13 +5,15 @@
  * Please review the LICENSE file.
  */
 
-#include "pxt.h"
-
-using namespace pxt;
-
-
 // Enable debugging or not:
 //#define DEBUG 1
+#define V2 1
+
+#ifdef V2
+#include "MicroBitSystemTimer.h"
+#else
+using namespace pxt;
+#include "pxt.h"
 
 //From: https://github.com/ARMmbed/nrf51-sdk/blob/master/source/nordic_sdk/components/drivers_nrf/delay/nrf_delay.h
 static void __INLINE nrf_delay_us(uint32_t volatile number_of_us) __attribute__((always_inline));
@@ -38,6 +40,7 @@ __ASM volatile (
     ".syntax divided\n"
     : "+r" (delay));
 }
+#endif 
 
 namespace timeanddate
 {
@@ -48,6 +51,16 @@ namespace timeanddate
     */
     //%
     uint32_t cpuTimeInSeconds() {
+#ifdef V2
+       uint32_t timeInS = (system_timer_current_time_us() / 1000000);
+
+#ifdef DEBUG
+        uBit.serial.send("\timeInS=");
+        uBit.serial.send((int)timeInS);
+#endif
+
+        return timeInS;
+#else
         static uint32_t lastUs = 0;
         static uint64_t totalUs = 0;
 #ifdef DEBUG
@@ -110,6 +123,7 @@ namespace timeanddate
 #endif
 
         return totalUs / 1000000;
+#endif
     }
 } // namespace timeanddate
 
