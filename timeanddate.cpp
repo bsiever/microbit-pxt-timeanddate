@@ -52,8 +52,14 @@ namespace timeanddate
     //%
     uint32_t cpuTimeInSeconds() {
 #ifdef V2
-        return system_timer_current_time_us() / 1000000;
+       uint32_t timeInS = (system_timer_current_time_us() / 1000000);
 
+#ifdef DEBUG
+        uBit.serial.send("\timeInS=");
+        uBit.serial.send((int)timeInS);
+#endif
+
+        return timeInS;
 #else
         static uint32_t lastUs = 0;
         static uint64_t totalUs = 0;
