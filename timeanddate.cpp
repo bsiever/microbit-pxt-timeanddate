@@ -12,7 +12,10 @@ using namespace pxt;
 
 // Enable debugging or not:
 //#define DEBUG 1
+#define V2 1
 
+
+#ifndef V2
 //From: https://github.com/ARMmbed/nrf51-sdk/blob/master/source/nordic_sdk/components/drivers_nrf/delay/nrf_delay.h
 static void __INLINE nrf_delay_us(uint32_t volatile number_of_us) __attribute__((always_inline));
 static void __INLINE nrf_delay_us(uint32_t volatile number_of_us)
@@ -38,7 +41,7 @@ __ASM volatile (
     ".syntax divided\n"
     : "+r" (delay));
 }
-
+#endif 
 namespace timeanddate
 {
     /* 
@@ -48,6 +51,10 @@ namespace timeanddate
     */
     //%
     uint32_t cpuTimeInSeconds() {
+#ifdef V2
+        return system_timer_current_time_us() / 1000000;
+
+#else
         static uint32_t lastUs = 0;
         static uint64_t totalUs = 0;
 #ifdef DEBUG
@@ -110,6 +117,7 @@ namespace timeanddate
 #endif
 
         return totalUs / 1000000;
+#endif
     }
 } // namespace timeanddate
 
