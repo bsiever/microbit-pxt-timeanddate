@@ -14,7 +14,7 @@ namespace timeanddate {
         This ensures that "time" is checked periodically and event handlers are called.  
     */
     basic.forever(function () {
-        const cpuTime = cpuTimeInSeconds()
+        const cpuTime = control.millis()/1000; //cpuTimeInSeconds()
         const t = timeFor(cpuTime)
         if (lastUpdateMinute != t.minute) {
             // New minute
