@@ -49,8 +49,6 @@ namespace timeanddate
     */
     //%
     uint32_t cpuTimeInSeconds() {
-#if MICROBIT_CODAL
-       uint32_t timeInS = (system_timer_current_time() / 1000);
 
 #ifdef DEBUG
         uBit.serial.send("\timeInS=");
@@ -58,7 +56,6 @@ namespace timeanddate
 #endif
 
         return timeInS;
-#else
         static uint32_t lastUs = 0;
         static uint64_t totalUs = 0;
 #ifdef DEBUG
@@ -69,7 +66,11 @@ namespace timeanddate
         // Continue to get ticker values until they are valid
         while(true) {
             // Try a read 
+#if MICROBIT_CODAL
+            currentUs = uBit.systemTimer.captureCounter()*32/1000;
+#else
             currentUs = us_ticker_read();
+#endif
             // If it was near the end of the phase, read again 
             // (avoid non-atomic access / race condition error)
             while((currentUs & 0x0000FFFF) > 0x0000FFC0) {  
@@ -121,7 +122,7 @@ namespace timeanddate
 #endif
 
         return totalUs / 1000000;
-#endif
+
     }
 } // namespace timeanddate
 
