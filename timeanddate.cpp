@@ -8,36 +8,16 @@
 // Enable debugging or not:
 //#define DEBUG 1
 
-#if MICROBIT_CODAL
-#include "MicroBitSystemTimer.h"
-#else
 #include "pxt.h"
 
-//From: https://github.com/ARMmbed/nrf51-sdk/blob/master/source/nordic_sdk/components/drivers_nrf/delay/nrf_delay.h
-static void __INLINE nrf_delay_us(uint32_t volatile number_of_us) __attribute__((always_inline));
-static void __INLINE nrf_delay_us(uint32_t volatile number_of_us)
-{
-register uint32_t delay __ASM ("r0") = number_of_us;
-__ASM volatile (
-    ".syntax unified\n"
-    "1:\n"
-    " SUBS %0, %0, #1\n"
-    " NOP\n"
-    " NOP\n"
-    " NOP\n"
-    " NOP\n"
-    " NOP\n"
-    " NOP\n"   
-    " NOP\n"  
-    " NOP\n"
-    " NOP\n"
-    " NOP\n"
-    " NOP\n"
-    " NOP\n"
-    " BNE 1b\n"
-    ".syntax divided\n"
-    : "+r" (delay));
-}
+#if MICROBIT_CODAL
+#include "MicroBitSystemTimer.h"
+#define usTicker()  (uBit.systemTimer.captureCounter() * 32 / 1000)
+#define usWait100() system_timer_wait_cycles(11 * 100)
+#else
+#include "nrf.h"
+#define usTicker()  (us_ticker_read())
+#define usWait100() wait_us(100)
 #endif 
 
 namespace timeanddate
@@ -54,8 +34,6 @@ namespace timeanddate
         uBit.serial.send("\timeInS=");
         uBit.serial.send((int)timeInS);
 #endif
-
-        return timeInS;
         static uint32_t lastUs = 0;
         static uint64_t totalUs = 0;
 #ifdef DEBUG
@@ -66,17 +44,13 @@ namespace timeanddate
         // Continue to get ticker values until they are valid
         while(true) {
             // Try a read 
-#if MICROBIT_CODAL
-            currentUs = uBit.systemTimer.captureCounter()*32/1000;
-#else
-            currentUs = us_ticker_read();
-#endif
+            currentUs = usTicker();
             // If it was near the end of the phase, read again 
             // (avoid non-atomic access / race condition error)
             while((currentUs & 0x0000FFFF) > 0x0000FFC0) {  
                 // Ensure timer before last 64uS of cycle (uS ticker should be about 5uS? Check!)
-                nrf_delay_us(100);
-                currentUs = us_ticker_read();
+                usWait100();
+                currentUs = usTicker();
             }
             uint32_t newUs = currentUs - lastUs;
 
