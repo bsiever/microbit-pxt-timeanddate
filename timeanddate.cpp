@@ -7,12 +7,10 @@
 
 // Enable debugging or not:
 //#define DEBUG 1
-#define V2 1
 
-#ifdef V2
+#if MICROBIT_CODAL
 #include "MicroBitSystemTimer.h"
 #else
-using namespace pxt;
 #include "pxt.h"
 
 //From: https://github.com/ARMmbed/nrf51-sdk/blob/master/source/nordic_sdk/components/drivers_nrf/delay/nrf_delay.h
@@ -51,7 +49,7 @@ namespace timeanddate
     */
     //%
     uint32_t cpuTimeInSeconds() {
-#ifdef V2
+#if MICROBIT_CODAL
        uint32_t timeInS = (system_timer_current_time_us() / 1000000);
 
 #ifdef DEBUG

@@ -246,3 +246,14 @@ timeanddate.numericTime(function (hour, minute, second, month, day, year) {
 testingDone()
 
 }
+
+input.onButtonPressed(Button.AB, function () {
+    timeanddate.set24HourTime(0, 0, 0)
+    timeanddate.setDate(1, 1, 0)
+})
+input.onButtonPressed(Button.A, function () {
+    basic.showString(timeanddate.time(timeanddate.TimeFormat.HHMMSS24hr))
+})
+input.onButtonPressed(Button.B, function () {
+    basic.showString(timeanddate.dateTime())
+})
