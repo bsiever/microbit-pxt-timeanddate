@@ -50,7 +50,7 @@ namespace timeanddate
     //%
     uint32_t cpuTimeInSeconds() {
 #if MICROBIT_CODAL
-       uint32_t timeInS = (system_timer_current_time_us() / 1000000);
+       uint32_t timeInS = (system_timer_current_time() / 1000);
 
 #ifdef DEBUG
         uBit.serial.send("\timeInS=");
