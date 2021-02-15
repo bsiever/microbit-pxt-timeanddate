@@ -189,7 +189,7 @@ assert("cb2", 1, minutes)
 assert("cb3", 1, days)
 
 
-timeanddate.set24HourTime(0, 26, 59)
+timeanddate.set24HourTime(0, 26, 58)
 basic.pause(2500)  // One more to minutes
 assert("cb4", 1, hours)
 assert("cb5", 2, minutes)
@@ -250,10 +250,12 @@ testingDone()
 input.onButtonPressed(Button.AB, function () {
     timeanddate.set24HourTime(0, 0, 0)
     timeanddate.setDate(1, 1, 0)
+    basic.clearScreen()
 })
 input.onButtonPressed(Button.A, function () {
     basic.showString(timeanddate.time(timeanddate.TimeFormat.HHMMSS24hr))
 })
 input.onButtonPressed(Button.B, function () {
-    basic.showString(timeanddate.dateTime())
+    serial.writeLine("time: " + timeanddate.dateTime())
 })
+

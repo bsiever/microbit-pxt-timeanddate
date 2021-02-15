@@ -12,12 +12,35 @@
 
 #if MICROBIT_CODAL
 #include "MicroBitSystemTimer.h"
-#define usTicker()  (uBit.systemTimer.captureCounter() * 32 / 1000)
-#define usWait100() system_timer_wait_cycles(11 * 100)
+// No us_ticker_read in CODAL
 #else
 #include "nrf.h"
-#define usTicker()  (us_ticker_read())
-#define usWait100() wait_us(100)
+
+//From: https://github.com/ARMmbed/nrf51-sdk/blob/master/source/nordic_sdk/components/drivers_nrf/delay/nrf_delay.h
+static void __INLINE nrf_delay_us(uint32_t volatile number_of_us) __attribute__((always_inline));
+static void __INLINE nrf_delay_us(uint32_t volatile number_of_us)
+{
+register uint32_t delay __ASM ("r0") = number_of_us;
+__ASM volatile (
+    ".syntax unified\n"
+    "1:\n"
+    " SUBS %0, %0, #1\n"
+    " NOP\n"
+    " NOP\n"
+    " NOP\n"
+    " NOP\n"
+    " NOP\n"
+    " NOP\n"   
+    " NOP\n"  
+    " NOP\n"
+    " NOP\n"
+    " NOP\n"
+    " NOP\n"
+    " NOP\n"
+    " BNE 1b\n"
+    ".syntax divided\n"
+    : "+r" (delay));
+}
 #endif 
 
 namespace timeanddate
@@ -29,28 +52,28 @@ namespace timeanddate
     */
     //%
     uint32_t cpuTimeInSeconds() {
-
-#ifdef DEBUG
-        uBit.serial.send("\timeInS=");
-        uBit.serial.send((int)timeInS);
-#endif
-        static uint32_t lastUs = 0;
         static uint64_t totalUs = 0;
+
 #ifdef DEBUG
         uint32_t retries = 0;
         static uint32_t lastLastUs = 0;
 #endif
+
+#if MICROBIT_CODAL
+        totalUs = system_timer_current_time_us();
+#else
+        static uint32_t lastUs = 0;
         uint32_t currentUs;
         // Continue to get ticker values until they are valid
         while(true) {
             // Try a read 
-            currentUs = usTicker();
+            currentUs = us_ticker_read();
             // If it was near the end of the phase, read again 
             // (avoid non-atomic access / race condition error)
             while((currentUs & 0x0000FFFF) > 0x0000FFC0) {  
                 // Ensure timer before last 64uS of cycle (uS ticker should be about 5uS? Check!)
-                usWait100();
-                currentUs = usTicker();
+                nrf_delay_us(100);
+                currentUs = us_ticker_read();
             }
             uint32_t newUs = currentUs - lastUs;
 
@@ -95,8 +118,8 @@ namespace timeanddate
         }
 #endif
 
+#endif
         return totalUs / 1000000;
-
     }
 } // namespace timeanddate
 
