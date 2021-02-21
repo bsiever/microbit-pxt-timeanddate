@@ -6,7 +6,7 @@
  */
 
 // Enable debugging or not:  (comment out / #ifdefs)
-//#define DEBUG 1
+#define DEBUG 1
 
 #include "pxt.h"
 #include "nrf.h"
@@ -64,6 +64,9 @@ namespace timeanddate
 
         NVIC_DisableIRQ(TIMER1_IRQn);
         if(timer == NULL) {
+            NRF_CLOCK_Type *clock = NRF_CLOCK;
+            clock->TASKS_HFCLKSTART = 1;
+
             timer = NRF_TIMER1;
             // Disable timer
             timer->TASKS_STOP = 1;
