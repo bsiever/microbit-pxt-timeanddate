@@ -5,16 +5,16 @@
  * Please review the LICENSE file.
  */
 
-// Enable debugging or not:
+// Enable debugging or not:  (comment out / #ifdefs)
 //#define DEBUG 1
 
 #include "pxt.h"
+#include "nrf.h"
 
 #if MICROBIT_CODAL
 #include "MicroBitSystemTimer.h"
 // No us_ticker_read in CODAL
 #else
-#include "nrf.h"
 
 //From: https://github.com/ARMmbed/nrf51-sdk/blob/master/source/nordic_sdk/components/drivers_nrf/delay/nrf_delay.h
 static void __INLINE nrf_delay_us(uint32_t volatile number_of_us) __attribute__((always_inline));
@@ -60,7 +60,32 @@ namespace timeanddate
 #endif
 
 #if MICROBIT_CODAL
-        totalUs = system_timer_current_time_us();
+        static NRF_TIMER_Type *timer = NULL;
+
+        NVIC_DisableIRQ(TIMER1_IRQn);
+        if(timer == NULL) {
+            timer = NRF_TIMER1;
+            // Disable timer
+            timer->TASKS_STOP = 1;
+            // Set bit mode
+            timer->BITMODE = 3;
+            // Restart it
+            timer->TASKS_START = 1;
+        }
+        timer->TASKS_CAPTURE[3] = 1;
+        uint32_t currentUs = timer->CC[3];
+        NVIC_EnableIRQ(TIMER1_IRQn);
+
+        static uint32_t lastUs = 0;
+        // uint32_t currentUs = system_timer_current_time_us() & 0x7fffffff;
+        totalUs += (currentUs - lastUs);
+        lastUs = currentUs;
+
+#ifdef DEBUG 
+        uBit.serial.send("\ncurrentUs=");
+        uBit.serial.send((int)currentUs);
+#endif
+
 #else
         static uint32_t lastUs = 0;
         uint32_t currentUs;
@@ -80,7 +105,7 @@ namespace timeanddate
             // Sanity check: only proceed if it's NOT negative  
             if(!(newUs & 0x80000000)) {
                 // Only add if it's positive (time increased) / valid NOT if the high bit is set)...
-                totalUs += newUs; 
+                totalUs += newUs;
 #ifdef DEBUG    
                 lastLastUs = lastUs;
 #endif
