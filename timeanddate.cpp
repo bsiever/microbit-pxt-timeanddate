@@ -6,7 +6,7 @@
  */
 
 // Enable debugging or not:  (comment out / #ifdefs)
-#define DEBUG 1
+//#define DEBUG 1
 
 #include "pxt.h"
 #include "nrf.h"
@@ -63,10 +63,13 @@ namespace timeanddate
         static NRF_TIMER_Type *timer = NULL;
 
         NVIC_DisableIRQ(TIMER1_IRQn);
+        // If we haven't gotten the timer yet, do startup tasks, including getting the timer.
         if(timer == NULL) {
+            // Ensure the HFCLOCK is running
             NRF_CLOCK_Type *clock = NRF_CLOCK;
             clock->TASKS_HFCLKSTART = 1;
 
+            // Get the timer (ensures this is only done once)
             timer = NRF_TIMER1;
             // Disable timer
             timer->TASKS_STOP = 1;
@@ -75,12 +78,13 @@ namespace timeanddate
             // Restart it
             timer->TASKS_START = 1;
         }
+        // Capture the current timer value
         timer->TASKS_CAPTURE[3] = 1;
         uint32_t currentUs = timer->CC[3];
         NVIC_EnableIRQ(TIMER1_IRQn);
 
+        // Update the time
         static uint32_t lastUs = 0;
-        // uint32_t currentUs = system_timer_current_time_us() & 0x7fffffff;
         totalUs += (currentUs - lastUs);
         lastUs = currentUs;
 
