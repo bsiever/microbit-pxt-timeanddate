@@ -12,8 +12,8 @@
 #include "nrf.h"
 
 #if MICROBIT_CODAL
-#include "MicroBitSystemTimer.h"
-// No us_ticker_read in CODAL
+
+
 #else
 
 //From: https://github.com/ARMmbed/nrf51-sdk/blob/master/source/nordic_sdk/components/drivers_nrf/delay/nrf_delay.h
@@ -53,6 +53,8 @@ namespace timeanddate
     //%
     uint32_t cpuTimeInSeconds() {
         static uint64_t totalUs = 0;
+        static uint32_t lastUs = 0;
+        uint32_t currentUs;
 
 #ifdef DEBUG
         uint32_t retries = 0;
@@ -80,11 +82,10 @@ namespace timeanddate
         }
         // Capture the current timer value
         timer->TASKS_CAPTURE[3] = 1;
-        uint32_t currentUs = timer->CC[3];
+        currentUs = timer->CC[3];
         NVIC_EnableIRQ(TIMER1_IRQn);
 
         // Update the time
-        static uint32_t lastUs = 0;
         totalUs += (currentUs - lastUs);
         lastUs = currentUs;
 
@@ -94,8 +95,6 @@ namespace timeanddate
 #endif
 
 #else
-        static uint32_t lastUs = 0;
-        uint32_t currentUs;
         // Continue to get ticker values until they are valid
         while(true) {
             // Try a read 
