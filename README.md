@@ -1,4 +1,4 @@
-# microbit-pxt-timeanddate
+# time-and-date
 
 
 This extension allows the micro:bit to track the time and date.  It can also be used for primitive 

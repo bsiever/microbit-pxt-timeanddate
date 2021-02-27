@@ -1,7 +1,9 @@
 {
-    "name": "microbit-pxt-timeanddate",
+    "name": "time-and-date",
     "version": "2.0.14",
     "description": "Software based Real-Time Clock (Time & Date)",
+    "license": "MIT",
+    "authors": ["Bill Siever <bsiever@gmail.com>"],
     "dependencies": {
         "core": "*"
     },
