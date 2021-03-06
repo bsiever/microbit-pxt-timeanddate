@@ -5,7 +5,11 @@ This extension allows the micro:bit to track the time and date.  It can also be 
 [stopwatch](#stopwatch-behavior)-like capabilities.
 
 It's importantant to be aware that:
-- This extension uses a counter that may only be accurate to about 10 parts per million, which is approximately 0.864 seconds per day.  The accuracy may change based on the environment (heat/cold) and from micro:bit to micro:bit. If accuracy is important, you can use the stopwatch experiment described [below](#measuring-accuracy-and-calibrating) to estimate the accuracy of your micro:bit where you plan to use it. 
+- This extension uses a counter with differing accuracy on the v1 and v2 micro:bits:
+  - The v1 stability is about 10 parts per million, which is approximately 0.864 seconds per day and 
+  - The v2 stability is 50 parts per million, which is about 4.32 seconds per day.  
+- The accuracy may change based on the environment (heat/cold) and from micro:bit to micro:bit. 
+- If accuracy is important, you can use the stopwatch experiment described [below](#measuring-accuracy-and-calibrating) to estimate the accuracy of your micro:bit where you plan to use it. 
 - The time needs to be set each time the micro:bit is reprogrammed or restarts.  
 
 ## Setting the Time #setting-the-time
@@ -355,7 +359,6 @@ If you measure the accuracy and it's consistent/predictable, you may be able to 
 
 ### ~
 
-
 # Stopwatch behavior #stopwatch-behavior
 
 By use of setting time to 0:0.0 this can be used as a simple stopwatch.  For example, for timing things that are less than 24 hours:
@@ -486,7 +489,6 @@ basic.forever(function () {
     }
 })
 ```
-
 ## Supported targets
 
 * for PXT/microbit
@@ -499,5 +501,6 @@ basic.forever(function () {
 ```package
 timeanddate=github:bsiever/microbit-pxt-timeanddate
 ```
+
 <script src="https://makecode.com/gh-pages-embed.js"></script>
 <script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
