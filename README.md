@@ -1,5 +1,9 @@
 # time-and-date
 
+```package
+microbit-pxt-timeanddate=github:bsiever/microbit-pxt-timeanddate
+```
+
 
 This extension allows the micro:bit to track the time and date.  It can also be used for primitive 
 [stopwatch](#stopwatch-behavior)-like capabilities.
@@ -497,10 +501,6 @@ basic.forever(function () {
 
 - Algorithms used here and Unit tests for them are available on GitHub: https://github.com/bsiever/software-based-RTC-algorithm
 - SparkFun's Guide was used to help develop this package: https://learn.sparkfun.com/tutorials/how-to-create-a-makecode-package-for-microbit/all
-
-```package
-timeanddate=github:bsiever/microbit-pxt-timeanddate
-```
 
 <script src="https://makecode.com/gh-pages-embed.js"></script>
 <script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
