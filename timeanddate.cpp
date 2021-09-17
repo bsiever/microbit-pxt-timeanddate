@@ -77,10 +77,16 @@ namespace timeanddate
 #endif
         // If we haven't gotten the timer yet, do startup tasks, including getting the timer.
         if(timer == NULL) {
-            // Ensure the HFCLOCK is running
-            NRF_CLOCK_Type *clock = NRF_CLOCK;
-            clock->TASKS_HFCLKSTART = 1;
 
+#ifdef SOFTDEVICE_PRESENT
+            if(ble_running() == false) 
+#else
+            {
+                    // Ensure the HFCLOCK is running
+                    NRF_CLOCK_Type *clock = NRF_CLOCK;
+                    clock->TASKS_HFCLKSTART = 1;
+            }
+#endif
             // Get the timer (ensures this is only done once)
             timer = NRF_TIMER1;
             // Disable timer
