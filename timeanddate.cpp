@@ -79,13 +79,17 @@ namespace timeanddate
         if(timer == NULL) {
 
 #ifdef SOFTDEVICE_PRESENT
-            if(ble_running() == false) 
+        if(ble_running() == true) {
+                sd_clock_hfclk_request();
+        } else  {
+                // Ensure the HFCLOCK is running
+                NRF_CLOCK_Type *clock = NRF_CLOCK;
+                clock->TASKS_HFCLKSTART = 1;
+        }
 #else
-            {
-                    // Ensure the HFCLOCK is running
-                    NRF_CLOCK_Type *clock = NRF_CLOCK;
-                    clock->TASKS_HFCLKSTART = 1;
-            }
+        // Ensure the HFCLOCK is running
+        NRF_CLOCK_Type *clock = NRF_CLOCK;
+        clock->TASKS_HFCLKSTART = 1;
 #endif
             // Get the timer (ensures this is only done once)
             timer = NRF_TIMER1;
