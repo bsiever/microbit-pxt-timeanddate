@@ -269,5 +269,5 @@ input.onButtonPressed(Button.A, function () {
 // Show time on UART on B
 input.onButtonPressed(Button.B, function () {
     serial.writeLine("time: " + timeanddate.dateTime())
-})
+}) 
 
