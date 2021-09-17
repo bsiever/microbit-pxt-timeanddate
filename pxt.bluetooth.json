@@ -4,7 +4,8 @@
     "description": "Software based Real-Time Clock (Time & Date)",
     "license": "MIT",
     "dependencies": {
-        "core": "*"
+        "core": "*",
+        "bluetooth": "*"
     },
     "files": [
         "README.md",
@@ -14,7 +15,7 @@
         "enums.d.ts"
     ],
     "testFiles": [
-        "test.ts"
+        "bluetoothtest.ts"
     ],
     "public": false,
     "targetVersions": {
@@ -25,6 +26,17 @@
         "microbit"
     ],
     "preferredEditor": "tsprj",
+    "yotta": {
+        "config": {
+            "microbit-dal": {
+                "bluetooth": {
+                    "open": 1,
+                    "whitelist": 0,
+                    "security_level": null
+                }
+            }
+        }
+    },
     "authors": [
         "Bill Siever <bsiever@gmail.com>"
     ]
