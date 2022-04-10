@@ -4,16 +4,15 @@
 microbit-pxt-timeanddate=github:bsiever/microbit-pxt-timeanddate
 ```
 
-
-This extension allows the micro:bit to track the time and date.  It can also be used for primitive 
-[stopwatch](#stopwatch-behavior)-like capabilities.
+This extension allows the micro:bit to keep track of the time and date.  It can also be used for primitive [stopwatch](#stopwatch-behavior)-like capabilities.
 
 It's importantant to be aware that:
 - This extension uses a counter with differing accuracy on the v1 and v2 micro:bits:
   - The v1 stability is about 10 parts per million, which is approximately 0.864 seconds per day and 
   - The v2 stability is 50 parts per million, which is about 4.32 seconds per day.  
-- The accuracy may change based on the environment (heat/cold) and from micro:bit to micro:bit. 
-- If accuracy is important, you can use the stopwatch experiment described [below](#measuring-accuracy-and-calibrating) to estimate the accuracy of your micro:bit where you plan to use it. 
+  - Some v2 features, like low power mode or playing a melody continuously, may interfer with time keeping.
+- The accuracy may change based on the environment (heat/cold) and from micro:bit to micro:bit.
+- If accuracy is important, you can use the stopwatch experiment described [below](#measuring-accuracy-and-calibrating) to estimate the accuracy of your micro:bit where you plan to use it.
 - The time needs to be set each time the micro:bit is reprogrammed or restarts.  
 
 ## Setting the Time #setting-the-time
@@ -28,10 +27,10 @@ Using a reasonable "startup value", as described in [Synchronize at startup](#1-
 
 ### 1. Synchronize at startup #1-synchronize-at-startup
 
-Synchronizing the time at startup is the easiest approach, but it requires re-programming the micro:bit everytime the time needs to be set (like whenever it is restarted).  The start up process just needs to include setting the time, like:
+Synchronizing the time at startup is the easiest approach, but it requires re-programming the micro:bit every time the time needs to be set, like whenever it is restarted.  The start up process just needs to include setting the time, like:
 
 ```block
-timeanddate.setDate(1, 20, 2020)
+timeanddate.setDate(1, 20, 2022)
 timeanddate.set24HourTime(13, 30, 0)
 ```
 
@@ -44,19 +43,19 @@ If you just care about time and not the date, you don't have to set the date.
 ### ~
 
 Once you're ready to program the micro:bit:
-1. Update the time/date being used so the time is approximately 1 minute in the future.  
-2. Program the micro:bit 
-3. Watch the real time carefully. 
-4. About 1-2 seconds before the programmed time press the reset button on the back of the micro:bit. 
-   * The micro:bit takes about 1-2 seconds to restart. This causes the "set" to run at the correct time.
+1. Update the time/date being used so the time is approximately 1 minute in the future.
+2. Program the micro:bit.
+3. Watch the real time carefully.
+4. About 1-2 seconds before the programmed time, press the reset button on the back of the micro:bit.
+   * The micro:bit takes about 1-2 seconds to restart. This causes the "set" block to run at the correct time.
    
-For the example above, the micro:bit would be reset at 13:29.58s on Jan. 20, 2020.  It would set the date and time at almost exactly the time indicated in the set block. 
+For the example above, the micro:bit would be reset at 13:29.58s on Jan. 20, 2022.  It would set the date and time at almost exactly the time indicated in the set block.
 
 ### 2. Time advancing / rewinding #2-time-advancing-rewinding
 
 This is the approach used by mechanical clocks, where time is set by moving the minute hand forward (or, possibly, backwards). Moving the minutes forward may cause the hours to change too. And as hours change the date could change, etc.
- 
-This is  a tedious way to set dates and should probably only be used when the date will never be needed and just the time needs to be set. 
+
+This is  a tedious way to set dates and should probably only be used when the date will never be needed and just the time needs to be set.
 
 #### 2.1 Simplest Approach
 
@@ -74,11 +73,11 @@ input.onButtonPressed(Button.B, function () {
 
 The buttons change the time one minute at a time (forward or backward).  Advancing the minutes beyond 59 or before 0 will cause the hour to change.
 
-#### 2.2 Alternate Approach: Setting at startup 
+#### 2.2 Alternate Approach: Setting at startup
 
 Here's an alternate approach that can be used to set the time at startup by advancing hours and minutes.  
-1. Hold "A" until the correct hour is shown.  
-2. Hold "B" until the message says "min:". 
+1. Hold "A" until the correct hour is shown.
+2. Hold "B" until the message says "min:".
 3. Hold "A" until the correct minute is shown.  
 4. Hold "B" again.
 
@@ -128,13 +127,13 @@ input.onButtonPressed(Button.A, function () {
 })
 ```
 
-Since the time setting commands use modular arithmetic, adding and subtracting to the prior value will "rollover" in the expected way and will not impact the hours, like the advancing approach would. 
+Since the time setting commands use modular arithmetic, adding and subtracting to the prior value will "rollover" in the expected way and will not impact the hours, like the advancing approach would.
 
 #### 3.2 Alternate Approach: Setting Hour/Minute at Start
 
 The following can be used to set the time at startup.  It will scroll the time continuously until you are done setting it.  
 
-1. Set the Hour by holding "A" to advance it or "B" to decrease it. 
+1. Set the Hour by holding "A" to advance it or "B" to decrease it.
 2. Hold "A+B" until it says "Set Min".
 3. Then repeat the process for the minute.  
 4. When done hold "A+B" until the message stops scrolling.  
@@ -170,7 +169,7 @@ while (!(input.buttonIsPressed(Button.AB))) {
 }
 ```
 
-# Full API 
+# Full API
 
 ## Setting Time Using 24-hour Format #timeanddate-set24hourtime
 
@@ -341,6 +340,7 @@ input.onButtonPressed(Button.B, function () {
 basic.showIcon(IconNames.Heart)
 timeanddate.set24HourTime(0, 0, 0)
 ```
+
 Use a stopwatch or stopwatch app on a computer/phone. To start measurement:
 1. To estimate the accuracy of the micro:bit you'll need to compare it's estimate of time to the stopwatch for a few hours (or even days). Be sure that it's set up someplace where it will have power continuously, either via battery or a USB cable,  for a long time (hours or days). Some computers will suspend power to USB devices if the computer isn't in use for a while, so you may want to use a USB  charger.
    * The micro:bit's accuracy can be impacted by large changes in temperature.  It's best to test it in an environment that you'll be using it in.  That is, if it'll be left outside in cold weather, test the accuracy in similar conditions. 
@@ -351,7 +351,7 @@ Use a stopwatch or stopwatch app on a computer/phone. To start measurement:
 The micro:bit should be accurate to within about 1 second per day or better.  This experiment depends on your reaction time, which is probably about 0-2 seconds.  Consequently you may need to let it run for several days to estimate the accuracy. 
 
 To estimate the accuracy:
-1. Look at the stopwatch.  Pick a precise instant that you'll take the measurement and keep it in mind.  For example, if the  stop watch reads 2:13.20 you may decide to make the measurement at 2:14.00. 
+1. Look at the stopwatch.  Pick a precise instant that you'll take the measurement and keep it in mind.  For example, if the  stop watch reads 2:13.20 you may decide to make the measurement at 2:14.00.
 2. At that precise instant press the "A" button.  The micro:bit will scroll it's current record of the time.  Compare it to the expected time.  For example, if the microbit indicated 0000-01-01 02:13.22 you'd estimate that the microbit  is about 2 seconds ahead. Since it's been running for 134 minutes, you'd estimate that it's gaining 2/134 seconds/minute. Since there are 1440 minutes in a day, this works out to about 21.5 seconds per day.
 
 ### ~tip
@@ -459,7 +459,6 @@ when it's stopped, but pressing "B" will re-display it.
 
 [Click here to open the shared project](https://makecode.microbit.org/_2MK536dctd0m)
 
-
 ```block
 input.onButtonPressed(Button.A, function () {
     running = !(running)
@@ -493,14 +492,17 @@ basic.forever(function () {
     }
 })
 ```
-## Supported targets
-
-* for PXT/microbit
 
 ## Misc Links & References
 
 - Algorithms used here and Unit tests for them are available on GitHub: https://github.com/bsiever/software-based-RTC-algorithm
 - SparkFun's Guide was used to help develop this package: https://learn.sparkfun.com/tutorials/how-to-create-a-makecode-package-for-microbit/all
+- I develop micro:bit extensions in my spare time to support activities I'm enthusiastic about, like summer camps and science curricula.  You are welcome to become a sponsor of my micro:bit work (one time or recurring payments), which helps offset equipment costs: https://github.com/sponsors/bsiever . Any support at all is greatly appreciated!
+
+## Supported targets
+
+* for PXT/microbit
+
 
 <script src="https://makecode.com/gh-pages-embed.js"></script>
 <script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
