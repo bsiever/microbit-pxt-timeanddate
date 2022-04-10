@@ -11,6 +11,13 @@
 #include "pxt.h"
 #include "nrf.h"
 
+#ifdef SOFTDEVICE_PRESENT
+#include "nrf_nvic.h"
+// #warning "****SOFTDEVICE PRESENT****"
+#else
+// #warning "******NO SOFTDEVICE PRESENT******"
+#endif
+
 #if MICROBIT_CODAL
 
 
@@ -64,7 +71,13 @@ namespace timeanddate
 #if MICROBIT_CODAL
         static NRF_TIMER_Type *timer = NULL;
 
+#if MICROBIT_CODAL
+        static NRF_TIMER_Type *timer = NULL;
+#ifdef SOFTDEVICE_PRESENT
+         sd_nvic_DisableIRQ(TIMER1_IRQn); 
+#else
         NVIC_DisableIRQ(TIMER1_IRQn);
+#endif
         // If we haven't gotten the timer yet, do startup tasks, including getting the timer.
         if(timer == NULL) {
             // Ensure the HFCLOCK is running
@@ -83,8 +96,11 @@ namespace timeanddate
         // Capture the current timer value
         timer->TASKS_CAPTURE[3] = 1;
         currentUs = timer->CC[3];
+#ifdef SOFTDEVICE_PRESENT
+        sd_nvic_EnableIRQ(TIMER1_IRQn);
+#else
         NVIC_EnableIRQ(TIMER1_IRQn);
-
+#endif
         // Update the time
         totalUs += (currentUs - lastUs);
         lastUs = currentUs;
