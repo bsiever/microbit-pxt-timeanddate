@@ -10,10 +10,15 @@ It's importantant to be aware that:
 - This extension uses a counter with differing accuracy on the v1 and v2 micro:bits:
   - The v1 stability is about 10 parts per million, which is approximately 0.864 seconds per day and 
   - The v2 stability is 50 parts per million, which is about 4.32 seconds per day.  
-  - Some v2 features, like low power mode or playing a melody continuously, may interfer with time keeping.
 - The accuracy may change based on the environment (heat/cold) and from micro:bit to micro:bit.
 - If accuracy is important, you can use the stopwatch experiment described [below](#measuring-accuracy-and-calibrating) to estimate the accuracy of your micro:bit where you plan to use it.
 - The time needs to be set each time the micro:bit is reprogrammed or restarts.  
+
+# Compatability
+
+- Bluetooth is not currently supported on v1 (it is on v2)
+- Some v2 features, like low power mode or playing a melody continuously, may interfer with time keeping.
+
 
 ## Setting the Time #setting-the-time
 
