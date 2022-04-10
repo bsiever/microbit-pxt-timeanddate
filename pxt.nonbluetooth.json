@@ -1,0 +1,31 @@
+{
+    "name": "microbit-pxt-timeanddate",
+    "version": "2.0.20",
+    "description": "Software based Real-Time Clock (Time & Date)",
+    "license": "MIT",
+    "dependencies": {
+        "core": "*"
+    },
+    "files": [
+        "README.md",
+        "timeanddate.ts",
+        "timeanddate.cpp",
+        "shims.d.ts",
+        "enums.d.ts"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "public": false,
+    "targetVersions": {
+        "target": "3.1.56",
+        "targetId": "microbit"
+    },
+    "supportedTargets": [
+        "microbit"
+    ],
+    "preferredEditor": "tsprj",
+    "authors": [
+        "Bill Siever <bsiever@gmail.com>"
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "name": "microbit-pxt-timeanddate",
+    "version": "2.0.20",
+    "description": "Software based Real-Time Clock (Time & Date)",
+    "license": "MIT",
+    "dependencies": {
+        "core": "*",
+        "bluetooth": "*"
+    },
+    "files": [
+        "README.md",
+        "timeanddate.ts",
+        "timeanddate.cpp",
+        "shims.d.ts",
+        "enums.d.ts"
+    ],
+    "testFiles": [
+        "bluetoothtest.ts"
+    ],
+    "public": false,
+    "targetVersions": {
+        "target": "3.1.56",
+        "targetId": "microbit"
+    },
+    "supportedTargets": [
+        "microbit"
+    ],
+    "preferredEditor": "tsprj",
+    "yotta": {
+        "config": {
+            "microbit-dal": {
+                "bluetooth": {
+                    "open": 1,
+                    "whitelist": 0,
+                    "security_level": null
+                }
+            }
+        }
+    },
+    "authors": [
+        "Bill Siever <bsiever@gmail.com>"
+    ]
+}

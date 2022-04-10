@@ -68,8 +68,6 @@ namespace timeanddate
         static uint32_t lastLastUs = 0;
 #endif
 
-#if MICROBIT_CODAL
-        static NRF_TIMER_Type *timer = NULL;
 
 #if MICROBIT_CODAL
         static NRF_TIMER_Type *timer = NULL;
