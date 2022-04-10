@@ -13,9 +13,9 @@
 
 #ifdef SOFTDEVICE_PRESENT
 #include "nrf_nvic.h"
-#warning "****SOFTDEVICE PRESENT****"
+// #warning "****SOFTDEVICE PRESENT****"
 #else
-#warning "******NO SOFTDEVICE PRESENT******"
+// #warning "******NO SOFTDEVICE PRESENT******"
 #endif
 
 #if MICROBIT_CODAL
@@ -68,6 +68,7 @@ namespace timeanddate
         static uint32_t lastLastUs = 0;
 #endif
 
+
 #if MICROBIT_CODAL
         static NRF_TIMER_Type *timer = NULL;
 #ifdef SOFTDEVICE_PRESENT
@@ -108,7 +109,6 @@ namespace timeanddate
 #else
         NVIC_EnableIRQ(TIMER1_IRQn);
 #endif
-
         // Update the time
         totalUs += (currentUs - lastUs);
         lastUs = currentUs;
