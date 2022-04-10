@@ -497,7 +497,7 @@ basic.forever(function () {
 
 - Algorithms used here and Unit tests for them are available on GitHub: https://github.com/bsiever/software-based-RTC-algorithm
 - SparkFun's Guide was used to help develop this package: https://learn.sparkfun.com/tutorials/how-to-create-a-makecode-package-for-microbit/all
-- I develop micro:bit extensions in my spare time to support activities I'm enthusiastic about, like summer camps and science curricula.  You are welcome to become a sponsor of my micro:bit work (one time or recurring payments), which helps offset equipment costs: https://github.com/sponsors/bsiever . Any support at all is greatly appreciated!
+- I develop micro:bit extensions in my spare time to support activities I'm enthusiastic about, like summer camps and science curricula.  You are welcome to become a sponsor of my micro:bit work (one time or recurring payments), which helps offset equipment costs: [[here](https://github.com/sponsors/bsiever)](https://github.com/sponsors/bsiever). Any support at all is greatly appreciated!
 
 ## Supported targets
 
