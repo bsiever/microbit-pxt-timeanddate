@@ -17,13 +17,17 @@ namespace timeanddate {
         // Only run about every 2 s;  Micro:bit uses a ticker with a 32kHz period, so the count should increase by about 65kHz
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
-        if (lastUpdateMinute != t.minute) {
+        if (lastUpdateMinute < t.minute || lastUpdateMinute==INVALID) {
             // New minute
-            control.raiseEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWMINUTE)
-            // If past startup and still a valid minute in the same day, possibly adjust
-            if (lastUpdateMinute != INVALID && lastUpdateDay == t.day) {
+            if(lastUpdateMinute!=INVALID)
+                control.raiseEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWMINUTE)
+            // If a new minute (and not a new day or initial)
+            if (lastUpdateMinute < t.minute) {
                 const expectedAdjustmentSoFar = Math.trunc((t.hour * 60 + t.minute) / (24.0 * 60) * dailyAdjustment)
                 const short = expectedAdjustmentSoFar - adjustmentToday
+                // serial.writeLine("Expected: " + expectedAdjustmentSoFar)
+                // serial.writeLine("Adjusted Already: " + adjustmentToday)
+                // serial.writeLine("short: " + short)
                 adjustmentToday += short
                 advanceBy(short, TimeUnit.Seconds)
             }
@@ -41,7 +45,10 @@ namespace timeanddate {
                 // Finish up any adjustments
                 const short = dailyAdjustment - adjustmentToday
                 advanceBy(short, TimeUnit.Milliseconds)
+                // serial.writeLine("Adjusted Already: " + adjustmentToday)
+                // serial.writeLine("short: " + short)
                 adjustmentToday = 0
+                lastUpdateMinute = 0 // Already did minute update
             }
             lastUpdateDay = t.day
         }
