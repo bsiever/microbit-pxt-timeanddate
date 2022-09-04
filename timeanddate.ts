@@ -9,32 +9,28 @@
 //% block=" Time and Date"
 //% color="#AA278D"  icon="\uf017"
 namespace timeanddate {
-
     /* 
         This ensures that "time" is checked periodically and event handlers are called.  
     */
-    basic.forever(function () {
+    loops.everyInterval(2000, function () {
+        // Only run about every 2 s;  Micro:bit uses a ticker with a 32kHz period, so the count should increase by about 65kHz
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
         if (lastUpdateMinute != t.minute) {
             // New minute
-            if (minuteChangeHandler)
-                minuteChangeHandler()
+            control.raiseEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWMINUTE)
             lastUpdateMinute = t.minute
         }
         if (lastUpdateHour != t.hour) {
             // New hour
-            if (hourChangeHandler)
-                hourChangeHandler()
+            control.raiseEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWHOUR)
             lastUpdateHour = t.hour
         }
         if (lastUpdateDay != t.day) {
             // New day
-            if (dayChangeHandler)
-                dayChangeHandler()
+            control.raiseEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWDAY)
             lastUpdateDay = t.day
         }
-        basic.pause(2000)  // Only run about every 2 s;  Micro:bit uses a ticker with a 32kHz period, so the count should increase by about 65kHz
     })
 
 
@@ -110,6 +106,11 @@ namespace timeanddate {
 
     // ********* State Variables ************************
 
+    const TIME_AND_DATE_EVENT = 94
+    const TIME_AND_DATE_NEWMINUTE = 1
+    const TIME_AND_DATE_NEWHOUR = 2
+    const TIME_AND_DATE_NEWDAY = 3
+
     // State variables to manage time 
     let startYear: Year = 0
     let timeToSetpoint: SecondsCount = 0
@@ -138,9 +139,6 @@ namespace timeanddate {
     let lastUpdateMinute: Minute = 100   // Set to invalid values for first update
     let lastUpdateHour: Hour = 100
     let lastUpdateDay: Day = 100
-    let minuteChangeHandler: Action = null
-    let hourChangeHandler: Action = null
-    let dayChangeHandler: Action = null
 
 
     // Cummulative Days of Year (cdoy): Table of month (1-based indices) to cummulative completed days prior to month
@@ -482,7 +480,7 @@ namespace timeanddate {
     //% block="minute changed" advanced=true
     //% weight=85
     export function onMinuteChanged(handler: () => void) {
-        minuteChangeHandler = handler
+        control.onEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWMINUTE, handler)
     }
 
     /**
@@ -491,7 +489,7 @@ namespace timeanddate {
     //% block="hour changed" advanced=true
     //% weight=80
     export function onHourChanged(handler: () => void) {
-        hourChangeHandler = handler
+        control.onEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWHOUR, handler)
     }
 
     /**
@@ -500,7 +498,7 @@ namespace timeanddate {
     //% block="day changed" advanced=true
     //% weight=75
     export function onDayChanged(handler: () => void) {
-        dayChangeHandler = handler
+        control.onEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWDAY, handler)
     }
 
     // ***************** This was just for debugging / evaluate problems in API
