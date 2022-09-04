@@ -332,7 +332,16 @@ to determine the ordinal day of the year.  1 is Jan. 1, 2, is Jan 2, etc.  Dec. 
 ```sig
 timeanddate.setDailyAdjustment(adjustment: number)
 ```
+
 Adjust the time by the given number of milliseconds over the course of a day.
+
+### ~alert
+
+# Only set adjustment once!
+
+Be sure to only set the daily adjustment once, like in the start code. 
+
+### ~
 
 # Measuring Accuracy and Calibrating #measuring-accuracy-and-calibrating
 
@@ -364,16 +373,15 @@ To estimate the accuracy:
 1. Look at the stopwatch.  Pick a precise instant that you'll take the measurement and keep it in mind.  For example, if the  stop watch reads 2:13.20 you may decide to make the measurement at 2:14.00.
 2. At that precise instant press the "A" button.  The micro:bit will scroll it's current record of the time.  Compare it to the expected time.  For example, if the microbit indicated 0000-01-01 02:13.22 you'd estimate that the microbit  is about 2 seconds ahead. Since it's been running for 134 minutes, you'd estimate that it's gaining 2/134 seconds/minute. Since there are 1440 minutes in a day, this works out to about 21.5 seconds per day.
 
-If you get an accurate estimate for the error (in milliseconds) in a 24-hour period, you can use the ``[timeanddate.setDailyAdjustment()]`` to regularly compensate for errors. 
 
 ### ~tip
 
 #### Improving Accuracy
-If you measure the accuracy and it's consistent/predictable, you may be able to use the ``[timeanddate.advanceBy()]`` and ``[timeanddate.onHourChanged()]`` blocks to periodically adjust the accuracy.  
- 
-**Be careful setting time backward while using ``[timeanddate.onHourChanged()]``!** It's possible to get stuck in a "loop" that continually resets the time. You may need to use a variable to identify which "hour" was the last one to be adjusted. 
+
+If you get an accurate estimate for the error (in milliseconds) in a 24-hour period, you can use the ``[timeanddate.setDailyAdjustment()]`` to regularly compensate for errors. 
 
 ### ~
+
 
 # Stopwatch behavior #stopwatch-behavior
 
