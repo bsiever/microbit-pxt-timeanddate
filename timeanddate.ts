@@ -9,6 +9,7 @@
 //% block=" Time and Date"
 //% color="#AA278D"  icon="\uf017"
 namespace timeanddate {
+    const INVALID = 100
     /* 
         This ensures that "time" is checked periodically and event handlers are called.  
     */
@@ -19,12 +20,14 @@ namespace timeanddate {
         if (lastUpdateMinute != t.minute) {
             // New minute
             control.raiseEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWMINUTE)
+            // If past startup and still a valid minute in the same day, possibly adjust
+            if (lastUpdateMinute != INVALID && lastUpdateDay == t.day) {
+                const expectedAdjustmentSoFar = Math.trunc((t.hour * 60 + t.minute) / (24.0 * 60) * dailyAdjustment)
+                const short = expectedAdjustmentSoFar - adjustmentToday
+                adjustmentToday += short
+                advanceBy(short, TimeUnit.Seconds)
+            }
             lastUpdateMinute = t.minute
-
-            const expectedAdjustmentSoFar = Math.trunc((t.hour * 60 + t.minute) / (24.0 * 60) * dailyAdjustment)
-            const short = expectedAdjustmentSoFar - adjustmentToday
-            adjustmentToday += short
-            advanceBy(short, TimeUnit.Milliseconds)
         }
         if (lastUpdateHour != t.hour) {
             // New hour
@@ -34,11 +37,13 @@ namespace timeanddate {
         if (lastUpdateDay != t.day) {
             // New day
             control.raiseEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWDAY)
+            if (lastUpdateDay != INVALID) {
+                // Finish up any adjustments
+                const short = dailyAdjustment - adjustmentToday
+                advanceBy(short, TimeUnit.Milliseconds)
+                adjustmentToday = 0
+            }
             lastUpdateDay = t.day
-            // Finish up any adjustments
-            const short = dailyAdjustment - adjustmentToday
-            advanceBy(short, TimeUnit.Milliseconds)
-            adjustmentToday = 0
         }
     })
 
@@ -148,9 +153,9 @@ namespace timeanddate {
      */
 
     // State for event handlers 
-    let lastUpdateMinute: Minute = 100   // Set to invalid values for first update
-    let lastUpdateHour: Hour = 100
-    let lastUpdateDay: Day = 100
+    let lastUpdateMinute: Minute = INVALID   // Set to invalid values for first update
+    let lastUpdateHour: Hour = INVALID
+    let lastUpdateDay: Day = INVALID
 
 
     // Cummulative Days of Year (cdoy): Table of month (1-based indices) to cummulative completed days prior to month
@@ -517,7 +522,7 @@ namespace timeanddate {
     /**
     * Set the daily adjustment
     */
-    //% block="set daily adjustment $adjustment ms" advanced=true
+    //% block="set daily adjustment $adjustment s" advanced=true
     //% weight=5
     export function setDailyAdjustment(adjustment: number) {
         dailyAdjustment = adjustment
@@ -525,7 +530,7 @@ namespace timeanddate {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
         // Compute how much of today's adjustment is past
-        adjustmentToday = Math.trunc((t.hour * 60 + t.minute) / (24.0 * 60) * dailyAdjustment )
+        adjustmentToday = Math.trunc((t.hour * 60 + t.minute) / (24.0 * 60) * dailyAdjustment)
     }
 
     // ***************** This was just for debugging / evaluate problems in API

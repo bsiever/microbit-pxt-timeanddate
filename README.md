@@ -333,7 +333,7 @@ to determine the ordinal day of the year.  1 is Jan. 1, 2, is Jan 2, etc.  Dec. 
 timeanddate.setDailyAdjustment(adjustment: number)
 ```
 
-Adjust the time by the given number of milliseconds over the course of a day.
+Adjust the time by the given number of seconds over the course of a day.
 
 ### ~alert
 
@@ -378,7 +378,7 @@ To estimate the accuracy:
 
 #### Improving Accuracy
 
-If you get an accurate estimate for the error (in milliseconds) in a 24-hour period, you can use the ``[timeanddate.setDailyAdjustment()]`` to regularly compensate for errors. 
+If you get an accurate estimate for the error (in seconds) in a 24-hour period, you can use the ``[timeanddate.setDailyAdjustment()]`` to regularly compensate for errors. 
 
 ### ~
 
