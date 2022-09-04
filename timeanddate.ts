@@ -20,6 +20,11 @@ namespace timeanddate {
             // New minute
             control.raiseEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWMINUTE)
             lastUpdateMinute = t.minute
+
+            const expectedAdjustmentSoFar = Math.trunc((t.hour * 60 + t.minute) * dailyAdjustment / (24 * 60))
+            const short = expectedAdjustmentSoFar - adjustmentToday
+            adjustmentToday += short
+            advanceBy(short, TimeUnit.Milliseconds)
         }
         if (lastUpdateHour != t.hour) {
             // New hour
@@ -30,6 +35,10 @@ namespace timeanddate {
             // New day
             control.raiseEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWDAY)
             lastUpdateDay = t.day
+            // Finish up any adjustments
+            const short = dailyAdjustment - adjustmentToday
+            advanceBy(short, TimeUnit.Milliseconds)
+            adjustmentToday = 0
         }
     })
 
@@ -115,6 +124,9 @@ namespace timeanddate {
     let startYear: Year = 0
     let timeToSetpoint: SecondsCount = 0
     let cpuTimeAtSetpoint: SecondsCount = 0
+
+    let dailyAdjustment : number = 0
+    let adjustmentToday: number = 0
 
     /*    
     Time is all relative to the "start year" that is set by setDate() (or 0 by default) as follows:
@@ -499,6 +511,21 @@ namespace timeanddate {
     //% weight=75
     export function onDayChanged(handler: () => void) {
         control.onEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWDAY, handler)
+    }
+
+
+    /**
+    * Set the daily adjustment
+    */
+    //% block="set daily adjustment $adjustment ms" advanced=true
+    //% weight=5
+    export function setDailyAdjustment(adjustment: number) {
+        dailyAdjustment = adjustment
+
+        const cpuTime = cpuTimeInSeconds()
+        const t = timeFor(cpuTime)
+        // Compute how much of today's adjustment is past
+        adjustmentToday = Math.trunc((t.hour * 60 + t.minute) * dailyAdjustment / (24*60))
     }
 
     // ***************** This was just for debugging / evaluate problems in API

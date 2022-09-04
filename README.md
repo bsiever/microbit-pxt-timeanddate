@@ -19,7 +19,6 @@ It's importantant to be aware that:
 - Bluetooth is not currently supported on v1 (it is on v2)
 - Some v2 features, like low power mode or playing a melody continuously, may interfer with time keeping.
 
-
 ## Setting the Time #setting-the-time
 
 There are three common approaches to setting the time:
@@ -328,6 +327,12 @@ timeanddate.dateToDayOfYear()
 ```
 to determine the ordinal day of the year.  1 is Jan. 1, 2, is Jan 2, etc.  Dec. 31 is either 365 or 366 (in a leap year).
 
+## Setting a daily adjustment #timeanddate-setdailyadjustment
+
+```sig
+timeanddate.setDailyAdjustment(adjustment: number)
+```
+Adjust the time by the given number of milliseconds over the course of a day.
 
 # Measuring Accuracy and Calibrating #measuring-accuracy-and-calibrating
 
@@ -353,11 +358,13 @@ Use a stopwatch or stopwatch app on a computer/phone. To start measurement:
 3. Reset the micro:bit
 4. As soon as you see the heart on the micro:bit start the stopwatch 
 
-The micro:bit should be accurate to within about 1 second per day or better.  This experiment depends on your reaction time, which is probably about 0-2 seconds.  Consequently you may need to let it run for several days to estimate the accuracy. 
+The micro:bit should be accurate to within about 5 seconds per day or better.  This experiment depends on your reaction time, which is probably about 0-2 seconds.  Consequently you may need to let it run for several days to estimate the accuracy. 
 
 To estimate the accuracy:
 1. Look at the stopwatch.  Pick a precise instant that you'll take the measurement and keep it in mind.  For example, if the  stop watch reads 2:13.20 you may decide to make the measurement at 2:14.00.
 2. At that precise instant press the "A" button.  The micro:bit will scroll it's current record of the time.  Compare it to the expected time.  For example, if the microbit indicated 0000-01-01 02:13.22 you'd estimate that the microbit  is about 2 seconds ahead. Since it's been running for 134 minutes, you'd estimate that it's gaining 2/134 seconds/minute. Since there are 1440 minutes in a day, this works out to about 21.5 seconds per day.
+
+If you get an accurate estimate for the error (in milliseconds) in a 24-hour period, you can use the ``[timeanddate.setDailyAdjustment()]`` to regularly compensate for errors. 
 
 ### ~tip
 
