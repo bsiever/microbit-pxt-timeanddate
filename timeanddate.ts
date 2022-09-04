@@ -21,7 +21,7 @@ namespace timeanddate {
             control.raiseEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWMINUTE)
             lastUpdateMinute = t.minute
 
-            const expectedAdjustmentSoFar = Math.trunc((t.hour * 60 + t.minute) * dailyAdjustment / (24 * 60))
+            const expectedAdjustmentSoFar = Math.trunc((t.hour * 60 + t.minute) / (24.0 * 60) * dailyAdjustment)
             const short = expectedAdjustmentSoFar - adjustmentToday
             adjustmentToday += short
             advanceBy(short, TimeUnit.Milliseconds)
@@ -525,7 +525,7 @@ namespace timeanddate {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
         // Compute how much of today's adjustment is past
-        adjustmentToday = Math.trunc((t.hour * 60 + t.minute) * dailyAdjustment / (24*60))
+        adjustmentToday = Math.trunc((t.hour * 60 + t.minute) / (24.0 * 60) * dailyAdjustment )
     }
 
     // ***************** This was just for debugging / evaluate problems in API
