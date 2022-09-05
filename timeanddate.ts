@@ -25,9 +25,9 @@ namespace timeanddate {
             if (lastUpdateMinute < t.minute) {
                 const expectedAdjustmentSoFar = Math.trunc((t.hour * 60 + t.minute) / (24.0 * 60) * dailyAdjustment)
                 const short = expectedAdjustmentSoFar - adjustmentToday
-                // serial.writeLine("Expected: " + expectedAdjustmentSoFar)
-                // serial.writeLine("Adjusted Already: " + adjustmentToday)
-                // serial.writeLine("short: " + short)
+                serial.writeLine("Expected: " + expectedAdjustmentSoFar)
+                serial.writeLine("Adjusted Already: " + adjustmentToday)
+                serial.writeLine("short: " + short)
                 adjustmentToday += short
                 advanceBy(short, TimeUnit.Seconds)
             }
@@ -45,8 +45,8 @@ namespace timeanddate {
                 // Finish up any adjustments
                 const short = dailyAdjustment - adjustmentToday
                 advanceBy(short, TimeUnit.Milliseconds)
-                // serial.writeLine("Adjusted Already: " + adjustmentToday)
-                // serial.writeLine("short: " + short)
+                serial.writeLine("Adjusted Already: " + adjustmentToday)
+                serial.writeLine("short: " + short)
                 adjustmentToday = 0
                 lastUpdateMinute = 0 // Already did minute update
             }
