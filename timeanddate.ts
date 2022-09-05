@@ -9,7 +9,6 @@
 //% block=" Time and Date"
 //% color="#AA278D"  icon="\uf017"
 namespace timeanddate {
-    const INVALID = 100
     /* 
         This ensures that "time" is checked periodically and event handlers are called.  
     */
@@ -17,20 +16,9 @@ namespace timeanddate {
         // Only run about every 2 s;  Micro:bit uses a ticker with a 32kHz period, so the count should increase by about 65kHz
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
-        if (lastUpdateMinute < t.minute || lastUpdateMinute==INVALID) {
+        if (lastUpdateMinute != t.minute) {
             // New minute
-            if(lastUpdateMinute!=INVALID)
-                control.raiseEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWMINUTE)
-            // If a new minute (and not a new day or initial)
-            if (lastUpdateMinute < t.minute) {
-                const expectedAdjustmentSoFar = Math.trunc((t.hour * 60 + t.minute) / (24.0 * 60) * dailyAdjustment)
-                const short = expectedAdjustmentSoFar - adjustmentToday
-                // serial.writeLine("Expected: " + expectedAdjustmentSoFar)
-                // serial.writeLine("Adjusted Already: " + adjustmentToday)
-                // serial.writeLine("short: " + short)
-                adjustmentToday += short
-                advanceBy(short, TimeUnit.Seconds)
-            }
+            control.raiseEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWMINUTE)
             lastUpdateMinute = t.minute
         }
         if (lastUpdateHour != t.hour) {
@@ -41,15 +29,6 @@ namespace timeanddate {
         if (lastUpdateDay != t.day) {
             // New day
             control.raiseEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWDAY)
-            if (lastUpdateDay != INVALID) {
-                // Finish up any adjustments
-                const short = dailyAdjustment - adjustmentToday
-                advanceBy(short, TimeUnit.Milliseconds)
-                // serial.writeLine("Adjusted Already: " + adjustmentToday)
-                // serial.writeLine("short: " + short)
-                adjustmentToday = 0
-                lastUpdateMinute = 0 // Already did minute update
-            }
             lastUpdateDay = t.day
         }
     })
@@ -137,9 +116,6 @@ namespace timeanddate {
     let timeToSetpoint: SecondsCount = 0
     let cpuTimeAtSetpoint: SecondsCount = 0
 
-    let dailyAdjustment : number = 0
-    let adjustmentToday: number = 0
-
     /*    
     Time is all relative to the "start year" that is set by setDate() (or 0 by default) as follows:
 
@@ -160,9 +136,9 @@ namespace timeanddate {
      */
 
     // State for event handlers 
-    let lastUpdateMinute: Minute = INVALID   // Set to invalid values for first update
-    let lastUpdateHour: Hour = INVALID
-    let lastUpdateDay: Day = INVALID
+    let lastUpdateMinute: Minute = 100   // Set to invalid values for first update
+    let lastUpdateHour: Hour = 100
+    let lastUpdateDay: Day = 100
 
 
     // Cummulative Days of Year (cdoy): Table of month (1-based indices) to cummulative completed days prior to month
@@ -303,7 +279,7 @@ namespace timeanddate {
     //% block="set date to | month $month | / day $day | / year $year"
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
-    //% year.min=2020 year.max=2050 year.defl=2020
+    //% year.min=2020 year.max=2050 year.defl=2022
     //% weight=80
     export function setDate(month: Month, day: Day, year: Year) {
         month = month % 13
@@ -363,15 +339,15 @@ namespace timeanddate {
     //% block="day of week for month $month / day $day / year $year" advanced=true
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
-    //% year.min=2020 year.max=2050 year.defl=2020
+    //% year.min=2020 year.max=2050 year.defl=2022
     //% weight=40
     export function dateToDayOfWeek(month: Month, day: Day, year: Year): Weekday {
         let doy = dateToDayOfYear(month, day, year)
         // Gauss's Algorithm for Jan 1: https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week
         // R(1+5R(A-1,4)+4R(A-1,100)+6R(A-1,400),7)    
-        let jan1 = ((1+5*( (year-1) % 4)+4*( (year-1) % 100)+6* ( (year-1) % 400)) % 7) 
+        let jan1 = ((1 + 5 * ((year - 1) % 4) + 4 * ((year - 1) % 100) + 6 * ((year - 1) % 400)) % 7)
         jan1 += 6  // Shift range:  Gauss used 0=Sunday, we'll use 0=Monday
-        return ( (doy-1) + jan1 ) % 7
+        return ((doy - 1) + jan1) % 7
     }
 
     /**
@@ -381,9 +357,9 @@ namespace timeanddate {
     //% block="day of year for month $month / day $day / year $year" advanced=true
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
-    //% year.min=2020 year.max=2050 year.defl=2020
+    //% year.min=2020 year.max=2050 year.defl=2022
     //% weight=30
-    export function dateToDayOfYear(month: Month, day: Day, year: Year) : DayOfYear{
+    export function dateToDayOfYear(month: Month, day: Day, year: Year): DayOfYear {
         month = Math.constrain(month, 1, 12)
         // Assumes a valid date
         let dayOfYear = cdoy[month] + day
@@ -404,7 +380,7 @@ namespace timeanddate {
     export function numericTime(handler: (hour: Hour, minute: Minute, second: Second, month: Month, day: Day, year: Year) => void) {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(cpuTime)
-        handler(t.hour, t.minute, t.second,  t.month, t.day, t.year)
+        handler(t.hour, t.minute, t.second, t.month, t.day, t.year)
     }
 
     /**
@@ -523,20 +499,6 @@ namespace timeanddate {
     //% weight=75
     export function onDayChanged(handler: () => void) {
         control.onEvent(TIME_AND_DATE_EVENT, TIME_AND_DATE_NEWDAY, handler)
-    }
-
-
-    /**
-    * Set the daily adjustment
-    */
-    //% block="set daily adjustment $adjustment s" advanced=true
-    //% weight=5
-    export function setDailyAdjustment(adjustment: number) {
-        dailyAdjustment = adjustment
-        const cpuTime = cpuTimeInSeconds()
-        const t = timeFor(cpuTime)
-        // Compute how much of today's adjustment is past
-        adjustmentToday = Math.trunc((t.hour * 60 + t.minute) / (24.0 * 60) * dailyAdjustment)
     }
 
     // ***************** This was just for debugging / evaluate problems in API
