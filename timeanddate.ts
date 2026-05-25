@@ -135,7 +135,11 @@ namespace timeanddate {
         setTime methods update just timeToSetpoint and cpuTimeAtSetpoint
      */
 
-    // State for event handlers 
+    // Correction factor: corrected_delta = cpu_delta * correctionNumerator / correctionDenominator
+    let correctionNumerator: number = 1
+    let correctionDenominator: number = 1
+
+    // State for event handlers
     let lastUpdateMinute: Minute = 100   // Set to invalid values for first update
     let lastUpdateHour: Hour = 100
     let lastUpdateDay: Day = 100
@@ -186,7 +190,7 @@ namespace timeanddate {
     }
 
     function timeFor(cpuTime: SecondsCount): DateTime {
-        const deltaTime = cpuTime - cpuTimeAtSetpoint
+        const deltaTime = Math.idiv((cpuTime - cpuTimeAtSetpoint) * correctionNumerator, correctionDenominator)
         let sSinceStartOfYear = timeToSetpoint + deltaTime
         // Find elapsed years by counting up from start year and subtracting off complete years
         let y = startYear
@@ -289,6 +293,33 @@ namespace timeanddate {
         startYear = year
         cpuTimeAtSetpoint = cpuTime
         timeToSetpoint = secondsSoFarForYear(month, day, startYear, t.hour, t.minute, t.second)
+    }
+
+    /**
+     * Set a correction factor to compensate for CPU clock drift.
+     * Provide the number of seconds the clock counted and the actual real-world
+     * seconds that elapsed over the same period.  A counted value of 0 resets
+     * the correction to 1:1 (no correction).
+     * @param countedSeconds seconds measured by the CPU clock
+     * @param realSeconds actual real-world seconds that elapsed
+     */
+    //% block="set clock correction | counted $countedSeconds seconds | for $realSeconds real seconds"
+    //% countedSeconds.defl=86400 realSeconds.defl=86400
+    //% advanced=true
+    //% weight=88
+    export function setCorrection(countedSeconds: number, realSeconds: number) {
+        const cpuTime = cpuTimeInSeconds()
+        const t = timeFor(cpuTime)
+        startYear = t.year
+        cpuTimeAtSetpoint = cpuTime
+        timeToSetpoint = secondsSoFarForYear(t.month, t.day, t.year, t.hour, t.minute, t.second)
+        if (countedSeconds == 0) {
+            correctionNumerator = 1
+            correctionDenominator = 1
+        } else {
+            correctionNumerator = realSeconds
+            correctionDenominator = countedSeconds
+        }
     }
 
     /**
